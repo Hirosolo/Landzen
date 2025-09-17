@@ -1,12 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type PropertyCardProps = {
   id: number | string;
+  isFavorited?: boolean;
 };
 
-export default function PropertyCard({ id }: PropertyCardProps) {
+export default function PropertyCard({ id, isFavorited = false }: PropertyCardProps) {
   const router = useRouter();
+  const [favourite, setFavourite] = useState(true);
   // Example values
   const current = 500000;
   const total = 1000000;
@@ -24,6 +27,18 @@ export default function PropertyCard({ id }: PropertyCardProps) {
             src="/image-property.png"
             alt="Property"
           />
+          {isFavorited && (
+            <div className="absolute top-3 right-3 bg-white/90 rounded-full p-1 shadow">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-5 h-5 text-red-500"
+              >
+                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.197 3 12.931 3 10.5 3 8.015 5.015 6 7.5 6c1.357 0 2.66.56 3.595 1.505L12 8.41l.905-.905A5.077 5.077 0 0116.5 6C18.985 6 21 8.015 21 10.5c0 2.431-1.688 4.697-3.989 6.007a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.218l-.022.012-.007.003a.75.75 0 01-.666 0z" />
+              </svg>
+            </div>
+          )}
           <h2 className="absolute bottom-4 left-4 text-white text-2xl font-bold drop-shadow-md">
             Vinhomes Grand Park
           </h2>
