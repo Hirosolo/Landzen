@@ -1,7 +1,7 @@
-import Image from "next/image";
 import SearchBar from "./components/marketplace/searchBar";
 import NavBar from "./components/marketplace/navBar";
-
+import PropertyList from "./components/marketplace/propertyList";
+import Paging from "./components/marketplace/paging";
 
 export default function Home() {
   return (
@@ -24,7 +24,7 @@ export default function Home() {
       <NavBar />
 
       {/*search and filter */}
-      <div className="flex flex-wrap gap-3 items-center pt-3">
+      <div className="flex flex-wrap gap-3 items-center pt-5">
 
         <div className="flex items-center border rounded-md px-3 py-2 w-64">
           <svg xmlns="http://www.w3.org/2000/svg" 
@@ -62,6 +62,12 @@ export default function Home() {
           <option>Earning models</option>
         </select>
       </div>
+
+      {/*property grid */}
+        <PropertyList/>
+
+      {/*paging */}
+      <Paging/>
 
     </div>
   );
