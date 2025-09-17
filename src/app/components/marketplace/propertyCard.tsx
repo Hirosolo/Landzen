@@ -1,4 +1,12 @@
-export default function PropertyCard() {
+"use client";
+import { useRouter } from "next/navigation";
+
+type PropertyCardProps = {
+  id: number | string;
+};
+
+export default function PropertyCard({ id }: PropertyCardProps) {
+  const router = useRouter();
   // Example values
   const current = 500000;
   const total = 1000000;
@@ -70,7 +78,10 @@ export default function PropertyCard() {
 
           {/* buy button */}
           <div className="flex justify-center">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 my-2 rounded-md shadow">
+            <button
+              onClick={() => router.push(`/propertyInfo/${id}`)}
+              className="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 my-2 rounded-md shadow"
+            >
               BUY NOW
             </button>
           </div>
