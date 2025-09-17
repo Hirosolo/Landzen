@@ -1,14 +1,13 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type PropertyCardProps = {
   id: number | string;
   isFavorited?: boolean;
+  onBuy?: (id: number | string) => void;
 };
 
-export default function PropertyCard({ id, isFavorited = false }: PropertyCardProps) {
-  const router = useRouter();
+export default function PropertyCard({ id, isFavorited = false, onBuy }: PropertyCardProps) {
   const [favourite, setFavourite] = useState(true);
   // Example values
   const current = 500000;
@@ -94,7 +93,7 @@ export default function PropertyCard({ id, isFavorited = false }: PropertyCardPr
           {/* buy button */}
           <div className="flex justify-center">
             <button
-              onClick={() => router.push(`/propertyInfo/${id}`)}
+              onClick={() => onBuy?.(id)}
               className="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 my-2 rounded-md shadow"
             >
               BUY NOW
@@ -114,6 +113,8 @@ export default function PropertyCard({ id, isFavorited = false }: PropertyCardPr
           </div>
         </div>
       </div>
+
+      {/* Popup handled at page level via onBuy */}
     </div>
   );
 }

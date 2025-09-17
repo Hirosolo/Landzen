@@ -1,9 +1,15 @@
+"use client";
 import SearchBar from "./components/marketplace/searchBar";
 import NavBar from "./components/marketplace/navBar";
 import PropertyList from "./components/marketplace/propertyList";
 import Paging from "./components/marketplace/paging";
+import { useState } from "react";
+import PropertyInfoContent from "./components/propertyInfo/PropertyInfoContent";
 
 export default function Home() {
+  const [selectedId, setSelectedId] = useState<number | string | null>(null);
+  const closeModal = () => setSelectedId(null);
+
   return (
     <div>
       <SearchBar />
@@ -69,11 +75,27 @@ export default function Home() {
       </div>
 
       {/*property grid */}
-        <PropertyList/>
+        <PropertyList onBuy={setSelectedId}/>
 
       {/*paging */}
       <Paging/>
 
+      {/* PropertyInfo modal overlay */}
+      {selectedId !== null && (
+        <div className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+            >
+              ×
+            </button>
+            <div className="p-4">
+              <PropertyInfoContent id={selectedId} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
