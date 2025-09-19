@@ -131,7 +131,7 @@ export default function PropertyInfoContent({ id }: PropertyInfoContentProps) {
         </div>
 
         {/* Overview */}
-        <div className="border rounded-xl p-4 space-y-4">
+        <div className="border border-gray-400 rounded-xl p-4 space-y-4">
           <h2 className="font-semibold text-gray-800">Overview</h2>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="border border-gray-400 rounded-md p-2">
@@ -162,7 +162,7 @@ export default function PropertyInfoContent({ id }: PropertyInfoContentProps) {
         </div>
 
         {/* Economics */}
-        <div className="border rounded-xl p-4 space-y-4">
+        <div className="border border-gray-400 rounded-xl p-4 space-y-4">
           <h2 className="font-semibold text-gray-800">Economics</h2>
           <div className="grid grid-cols-3 gap-3 text-sm">
             <div className="border border-gray-400 rounded-md p-2">
