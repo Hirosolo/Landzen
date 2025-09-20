@@ -49,7 +49,109 @@ export default function MarketplaceSearchBar() {
         </button>
 
         {/* RainbowKit Connect Button */}
-        <ConnectButton/>
+        <ConnectButton.Custom>
+          {({
+            account,
+            chain,
+            openAccountModal,
+            openChainModal,
+            openConnectModal,
+            authenticationStatus,
+            mounted,
+          }) => {
+            // Note: If your app doesn't use authentication, you
+            // can remove all 'authenticationStatus' checks
+            const ready = mounted && authenticationStatus !== 'loading';
+            const connected =
+              ready &&
+              account &&
+              chain &&
+              (!authenticationStatus ||
+                authenticationStatus === 'authenticated');
+
+            return (
+              <div
+                {...(!ready && {
+                  'aria-hidden': true,
+                  'style': {
+                    opacity: 0,
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  },
+                })}
+              >
+                {(() => {
+                  if (!connected) {
+                    return (
+                      <button
+                        onClick={openConnectModal}
+                        type="button"
+                        className="bg-moss-500 hover:bg-moss-600 text-white rounded-3xl px-4 py-2 text-sm font-semibold transition-colors"
+                      >
+                        Connect Wallet
+                      </button>
+                    );
+                  }
+
+                  if (chain.unsupported) {
+                    return (
+                      <button
+                        onClick={openChainModal}
+                        type="button"
+                        className="bg-red-500 hover:bg-red-600 text-white rounded-3xl px-4 py-2 text-sm font-semibold transition-colors"
+                      >
+                        Wrong network
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={openChainModal}
+                        type="button"
+                        className="flex items-center gap-2 bg-moss-100 hover:bg-moss-200 text-moss-800 rounded-3xl px-3 py-2 text-sm font-semibold transition-colors"
+                      >
+                        {chain.hasIcon && (
+                          <div
+                            style={{
+                              background: chain.iconBackground,
+                              width: 16,
+                              height: 16,
+                              borderRadius: 999,
+                              overflow: 'hidden',
+                              marginRight: 4,
+                            }}
+                          >
+                            {chain.iconUrl && (
+                              <img
+                                alt={chain.name ?? 'Chain icon'}
+                                src={chain.iconUrl}
+                                style={{ width: 16, height: 16 }}
+                              />
+                            )}
+                          </div>
+                        )}
+                        {chain.name}
+                      </button>
+
+                      <button
+                        onClick={openAccountModal}
+                        type="button"
+                        className="bg-moss-500 hover:bg-moss-600 text-white rounded-3xl px-4 py-2 text-sm font-semibold transition-colors"
+                      >
+                        {account.displayName}
+                        {account.displayBalance
+                          ? ` (${account.displayBalance})`
+                          : ''}
+                      </button>
+                    </div>
+                  );
+                })()}
+              </div>
+            );
+          }}
+        </ConnectButton.Custom>
       </div>
     </nav>
   );
