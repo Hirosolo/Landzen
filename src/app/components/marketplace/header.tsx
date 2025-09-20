@@ -132,7 +132,7 @@ export default function MarketplaceSearchBar() {
                             )}
                           </div>
                         )}
-                        {chain.name}
+                        <span className="text-moss-900">{chain.name}</span>
                       </button>
 
                       <button
