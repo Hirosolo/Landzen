@@ -36,7 +36,7 @@ export default function PositionsTable({
         {positions.map((pos) => (
           <div
             key={pos.id}
-            className="grid grid-cols-5 items-center text-sm bg-moss-600 rounded-xl p-3 hover:bg-gray-700/40 transition"
+            className="grid grid-cols-5 items-center text-sm bg-green-600 rounded-xl p-3 hover:bg-gray-700/40 transition"
           >
             {/* Position */}
             <div className="flex items-center gap-3">

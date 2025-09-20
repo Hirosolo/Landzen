@@ -12,12 +12,17 @@
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-popover": "^1.1.15",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.89.0",
+    "@wagmi/core": "^2.21.0",
     "framer-motion": "^12.23.16",
     "lucide-react": "^0.544.0",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "recharts": "^3.2.1"
+    "recharts": "^3.2.1",
+    "viem": "^2.37.7",
+    "wagmi": "^2.17.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

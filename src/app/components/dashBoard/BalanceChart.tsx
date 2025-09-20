@@ -57,7 +57,7 @@ export default function BalanceChart({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+          <h2 className="text-2xl font-semibold flex items-center gap-2">
             BALANCE
           </h2>
           <p className="text-5xl font-bold mt-1">
