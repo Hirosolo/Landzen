@@ -20,8 +20,8 @@ export default function Marketplace() {
     <div>
       <MarketplaceHeader />
       {/*welcome message */}
-      <section className="bg-green text-white py-30">
-        <div className="max-w-4xl mx-auto text-center px-4">
+      <section className="bg-[url('/image-marketplaceBackground.png')] bg-cover bg-center text-white py-30">
+        <div className="max-w-4xl mx-auto text-center px-4  rounded-2xl p-6">
           <h1 className="text-2xl md:text-3xl font-bold">
             Marketplace for Tokenized Real Estate
           </h1>
@@ -49,7 +49,9 @@ export default function Marketplace() {
         <button
           onClick={() => setFavourited("favourite")}
           className={`font-bold pt-4 pb-2 mb-2 ml-5 py-2 ${
-            favourited === "favourite" ? "text-green-600 border-b-4" : "text-black"
+            favourited === "favourite"
+              ? "text-green-600 border-b-4"
+              : "text-black"
           }`}
         >
           Favourite
@@ -70,10 +72,10 @@ export default function Marketplace() {
         <div className="flex-1">
           {favourited === "favourite" && !walletConnected ? (
             <div className="p-6 text-center text-red-600 font-semibold">
-              <div>
-                You need to connect to wallet first
-                </div>
-              <button className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded rounded-3xl px-4 py-3 text-beige-100">Connect Wallet</button>
+              <div>You need to connect to wallet first</div>
+              <button className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded rounded-3xl px-4 py-3 text-beige-100">
+                Connect Wallet
+              </button>
             </div>
           ) : (
             <PropertyList onBuy={setSelectedId} />
@@ -83,8 +85,6 @@ export default function Marketplace() {
 
       {/*paging */}
       <Paging />
-
-
 
       {/* PropertyInfo modal overlay */}
       {selectedId !== null && (
@@ -97,7 +97,7 @@ export default function Marketplace() {
               ×
             </button>
             <div className="p-4">
-              <PropertyInfoContent id={selectedId} />
+              <PropertyInfoContent  />
             </div>
           </div>
         </div>
