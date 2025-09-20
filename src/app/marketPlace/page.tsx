@@ -8,10 +8,20 @@ import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoConte
 import SearchBar from "../components/marketplace/searchBar";
 import FilterSidebar from "../components/marketplace/filterSidebar";
 
+
+type Property = {
+  propertyID?: number | string;
+  propertyName?: string;
+  description?: string;
+  propertyAddress?: string;
+  googleMapUrl?: string;
+  images?: string;
+};
+
 export default function Marketplace() {
-  const [selectedId, setSelectedId] = useState<number | string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const closeModal = () => setSelectedId(null);
+  const closeModal = () => setSelectedProperty(null);
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
   const [walletConnected, setConnected] = useState(false);
   const [favourited, setFavourited] = useState("all");
@@ -78,7 +88,7 @@ export default function Marketplace() {
               </button>
             </div>
           ) : (
-            <PropertyList onBuy={setSelectedId} />
+            <PropertyList onBuy={setSelectedProperty} />
           )}
         </div>
       </div>
@@ -87,7 +97,7 @@ export default function Marketplace() {
       <Paging />
 
       {/* PropertyInfo modal overlay */}
-      {selectedId !== null && (
+      {selectedProperty !== null && (
         <div className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative">
             <button
@@ -97,7 +107,7 @@ export default function Marketplace() {
               ×
             </button>
             <div className="p-4">
-              <PropertyInfoContent  />
+              <PropertyInfoContent property={selectedProperty} />
             </div>
           </div>
         </div>

@@ -1,39 +1,43 @@
 "use client";
 import { useState } from "react";
 
-type PropertyCardProps = {
-  id: number | string;
-  isFavorited?: boolean;
-  onBuy?: (id: number | string) => void;
+type Property = {
+  propertyID?: number | string;
+  propertyName?: string;
+  description?: string;
+  type?: string;
+  propertyAddress?: string;
+  googleMapUrl?: string;
+  images?: string;
 };
 
-export default function PropertyCard({
-  id,
-  isFavorited = false,
-  onBuy,
-}: PropertyCardProps) {
-  const [favourite, setFavourite] = useState(true);
+type PropertyCardProps = {
+  property: Property;
+  onBuy?: () => void;
+};
 
+export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
+  const [favourite, setFavourite] = useState(true);
   const current = 500000;
   const total = 1000000;
   const percentage = (current / total) * 100;
-
   return (
     <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white">
       {/* Image with overlay text */}
       <div className="relative">
         <img
           className="w-full h-60 object-cover"
-          src="/image-property.png"
-          alt="Property"
+          src={property.images && property.images !== "NaN" ? property.images : "/image-property.png"}
+          alt={property.propertyName || "Property"}
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30"></div>
 
         {/* Location link */}
         <a
-          href="https://maps.app.goo.gl/uHn6UMmqy2U7zu3S8"
+          href={property.googleMapUrl && property.googleMapUrl !== "NaN" ? property.googleMapUrl : "#"}
           className="absolute bottom-3 left-3 flex items-center text-white text-sm font-medium drop-shadow"
+          target="_blank" rel="noopener noreferrer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -44,19 +48,17 @@ export default function PropertyCard({
             <path d="M12 21c4.97-4.97 8-8.03 8-11.5A8 8 0 004 9.5C4 13 7.03 16.03 12 21z" />
             <circle cx="12" cy="9.5" r="2.5" />
           </svg>
-          Ho Chi Minh
+          {property.propertyAddress || "Unknown"}
         </a>
       </div>
 
       {/* Card body */}
       <div className="p-4 space-y-4">
-        {/* Location */}
-
         {/* Property title + type */}
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">VINHOMES GRAND PARK</h3>
+          <h3 className="font-bold text-gray-900">{property.propertyName || "No Name"}</h3>
           <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
-            Residential Home
+            {property.type || "NaN"}
           </span>
         </div>
 
@@ -64,15 +66,15 @@ export default function PropertyCard({
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <p className="text-gray-500 text-xs">Property Value</p>
-            <p className="font-bold text-gray-900">$1,000</p>
+            <p className="font-bold text-gray-900">NaN</p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Rental Yield</p>
-            <p className="font-bold text-gray-900">9.32%</p>
+            <p className="font-bold text-gray-900">NaN</p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Annual Return</p>
-            <p className="font-bold text-gray-900">10.36%</p>
+            <p className="font-bold text-gray-900">NaN</p>
           </div>
         </div>
 
@@ -94,7 +96,7 @@ export default function PropertyCard({
 
         {/* Invest button */}
         <button
-          onClick={() => onBuy?.(id)}
+          onClick={onBuy}
           className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW
