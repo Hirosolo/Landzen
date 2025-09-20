@@ -12,40 +12,33 @@ export default function Dashboard() {
   type Position = {
     id: string;
     name: string;
-    symbol: string;
-    protocol: string;
+
+    type: string;
     balance: string;
     balanceDetail: string;
     balancePercent: number;
     price: string;
-    icon: string;
-    protocolIcon: string;
   };
-  
+
   const data: Position[] = [
     {
       id: "1",
       name: "Plume USD",
-      symbol: "pUSD",
-      protocol: "Plume",
-      balance: "$1.05",
+      type: "Residential Home",
+      balance: "1.05",
       balanceDetail: "1.051 pUSD",
       balancePercent: 19.7,
-      price: "$1.00",
-      icon: "/icons/plume-usd.png", // replace with your asset
-      protocolIcon: "/icons/plume.png",
+      price: "1.00",
     },
     {
       id: "2",
       name: "Nest Credit Vault",
-      symbol: "nCREDIT",
-      protocol: "Nest",
-      balance: "$1.00",
+
+      type: "Co-Living",
+      balance: "1.00",
       balanceDetail: "0.9888 nCREDIT",
       balancePercent: 18.8,
-      price: "$1.01",
-      icon: "/icons/nest-credit.png", // replace with your asset
-      protocolIcon: "/icons/nest.png",
+      price: "1.01",
     },
   ];
 
@@ -63,14 +56,14 @@ export default function Dashboard() {
           <BalanceChart
             balance="$1.18135"
             change="+0.57%"
-            date="Thu Sep 18 2025"
-          />  
+            date={new Date().toDateString()}
+          />
 
           {/* Stats cards */}
           <StatsCards
             rwaBalance="0"
-            rentalYield="7.164%"
-            annualReturn="9.324%"
+            rentalYield="7.164"
+            activeProperty="9"
             autoRedeem={autoRedeem}
             onAutoRedeemChange={setAutoRedeem}
           />

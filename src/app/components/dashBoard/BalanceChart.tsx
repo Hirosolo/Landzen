@@ -17,7 +17,11 @@ type BalanceChartProps = {
   date: string;
 };
 
-export default function BalanceChart({ balance, change, date }: BalanceChartProps) {
+export default function BalanceChart({
+  balance,
+  change,
+  date,
+}: BalanceChartProps) {
   const [tab, setTab] = useState("1M");
 
   // Mock data for different tabs
@@ -25,7 +29,7 @@ export default function BalanceChart({ balance, change, date }: BalanceChartProp
     "1W": [
       { date: "Mon", price: 1.12 },
       { date: "Tue", price: 1.14 },
-      { date: "Wed", price: 1.10 },
+      { date: "Wed", price: 1.1 },
       { date: "Thu", price: 1.16 },
       { date: "Fri", price: 1.18 },
       { date: "Sat", price: 1.17 },
@@ -54,16 +58,10 @@ export default function BalanceChart({ balance, change, date }: BalanceChartProp
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="logo"
-              className="w-6 h-6 rounded-full"
-            />
-            BALANCE 
+            BALANCE
           </h2>
           <p className="text-5xl font-bold mt-1">
-            {balance}{" "}
-            <span className="text-green-500 text-lg">{change}</span>
+            {balance} <span className="text-green-500 text-lg">{change}</span>
           </p>
           <p className="text-gray-400 text-md pt-2">{date}</p>
         </div>
@@ -87,28 +85,28 @@ export default function BalanceChart({ balance, change, date }: BalanceChartProp
       </div>
 
       {/* Chart */}
-      <div className="flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-            <XAxis dataKey="date" stroke="#aaa" />
-            <YAxis stroke="#aaa" domain={["dataMin - 0.05", "dataMax + 0.05"]} />
-            <Tooltip
-              contentStyle={{ backgroundColor: "#1f2937", border: "none" }}
-              labelStyle={{ color: "#9ca3af" }}
-              cursor={{ stroke: "#4ade80", strokeWidth: 1 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="price"
-              stroke="#22c55e"
-              strokeWidth={2}
-              dot={{ fill: "#22c55e", r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <div className="w-full h-64"> {/* fixed height instead of flex-1 */}
+  <ResponsiveContainer width="100%" height="100%">
+    <LineChart data={chartData}>
+      <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+      <XAxis dataKey="date" stroke="#aaa" />
+      <YAxis stroke="#aaa" domain={["dataMin - 0.05", "dataMax + 0.05"]} />
+      <Tooltip
+        contentStyle={{ backgroundColor: "#1f2937", border: "none" }}
+        labelStyle={{ color: "#9ca3af" }}
+        cursor={{ stroke: "#4ade80", strokeWidth: 1 }}
+      />
+      <Line
+        type="monotone"
+        dataKey="price"
+        stroke="#22c55e"
+        strokeWidth={2}
+        dot={{ fill: "#22c55e", r: 4 }}
+        activeDot={{ r: 6 }}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
     </div>
   );
 }
