@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import PropertyCard from "../marketplace/propertyCard";
 
-export default function MarketplaceNavBars() {
-  const tabs = ["All Projects", "Residential Homes", "Apartments", "Co-Living", "Hospitality"];
+export default function LandingPageNavBars() {
+  const tabs = ["Projects", "About", "Apartments", "How To Start", "FAQs"];
   const [activeTab, setActiveTab] = useState("All Projects");
   const [highlightStyle, setHighlightStyle] = useState({});
   const containerRef = useRef<HTMLDivElement>(null);

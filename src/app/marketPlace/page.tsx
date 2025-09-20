@@ -13,6 +13,9 @@ export default function Marketplace() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const closeModal = () => setSelectedId(null);
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
+  const [walletConnected, setConnected] = useState(false);
+  const [favourited, setFavourited] = useState("all");
+
   return (
     <div>
       <MarketplaceHeader />
@@ -35,28 +38,53 @@ export default function Marketplace() {
 
       {/*Favorite filter */}
       <div className="w-full flex border-b border-black border-md">
-        <button className="ml-5 text-black font-bold hover:bg-gray-400 px-4 py-2 rounded rounded-md">All</button>
-        <button className="text-black font-bold hover:bg-gray-400 px-4 py-2 rounded rounded-md">Favourite</button>
+        <button
+          onClick={() => setFavourited("all")}
+          className={`ml-5 font-bold pt-4 pb-2 mb-2 py-2 w-12 ${
+            favourited === "all" ? "text-green-600 border-b-4" : "text-black"
+          }`}
+        >
+          All
+        </button>
+        <button
+          onClick={() => setFavourited("favourite")}
+          className={`font-bold pt-4 pb-2 mb-2 ml-5 py-2 ${
+            favourited === "favourite" ? "text-green-600 border-b-4" : "text-black"
+          }`}
+        >
+          Favourite
+        </button>
       </div>
 
-{/* search and filter */}
-<SearchBar onFilterToggle={toggleFilter} />
+      {/* search and filter */}
+      <SearchBar onFilterToggle={toggleFilter} isFilterOpen={isFilterOpen} />
 
-{/* main content with sidebar + list */}
-<div className="flex">
-  {isFilterOpen && (
-    <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
-  )}
-  <div className="flex-1">
-    <PropertyList onBuy={setSelectedId} />
-  </div>
-</div>
+      {/* main content with sidebar + list */}
+      <div className="flex">
+        {isFilterOpen && (
+          <FilterSidebar
+            isOpen={isFilterOpen}
+            onClose={() => setIsFilterOpen(false)}
+          />
+        )}
+        <div className="flex-1">
+          {favourited === "favourite" && !walletConnected ? (
+            <div className="p-6 text-center text-red-600 font-semibold">
+              <div>
+                You need to connect to wallet first
+                </div>
+              <button className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded rounded-3xl px-4 py-3 text-beige-100">Connect Wallet</button>
+            </div>
+          ) : (
+            <PropertyList onBuy={setSelectedId} />
+          )}
+        </div>
+      </div>
 
       {/*paging */}
       <Paging />
 
-      {/* Filter Sidebar */}
-      <FilterSidebar isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
+
 
       {/* PropertyInfo modal overlay */}
       {selectedId !== null && (

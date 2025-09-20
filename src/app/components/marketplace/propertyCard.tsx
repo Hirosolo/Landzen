@@ -95,7 +95,7 @@ export default function PropertyCard({
         {/* Invest button */}
         <button
           onClick={() => onBuy?.(id)}
-          className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow"
+          className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW
         </button>

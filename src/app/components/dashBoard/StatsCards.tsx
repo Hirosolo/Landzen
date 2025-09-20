@@ -14,18 +14,12 @@ export default function StatsCards({
   onAutoRedeemChange 
 }: StatsCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 h-60">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 h-60" >
       <div className="bg-gray-800 rounded-xl p-6 flex flex-col items-start justify-center">
-        <p className="text-gray-400 text-2xl">My RWA Balance</p>
+        <p className="text-gray-400 text-2xl">Available to claim</p>
         <p className="text-4xl font-bold mt-2">{rwaBalance}</p>
-        <label className="mt-3 flex items-center gap-2 text-sm text-gray-400">
-          <input 
-            type="checkbox" 
-            className="accent-green-500" 
-            checked={autoRedeem}
-            onChange={(e) => onAutoRedeemChange?.(e.target.checked)}
-          />
-          Auto Redeem
+        <label className="mt-3 flex items-center gap-2 text-sm text-gray-400 bg-darkGreen">
+          <button>Harvest</button>
         </label>
       </div>
 

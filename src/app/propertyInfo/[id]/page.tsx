@@ -5,7 +5,8 @@ type PageProps = {
 export default function PropertyInfo({ params }: PageProps) {
   const { id } = params;
   return (
-    <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-beige-100">
+      <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Left side */}
       <div className="space-y-4">
         {/* Main image */}
@@ -32,7 +33,7 @@ export default function PropertyInfo({ params }: PageProps) {
         </div>
 
         {/* Location + description */}
-        <div className="space-y-3">
+        <div className="space-y-3 ">
           <div className="flex items-center text-gray-600 text-sm font-medium">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -181,6 +182,7 @@ export default function PropertyInfo({ params }: PageProps) {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

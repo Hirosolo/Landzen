@@ -1,32 +1,46 @@
 "use client";
-export default function MarketplaceHeader() {
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
+export default function MarketplaceSearchBar() {
+  const pathname = usePathname();
+  
+  const isDashboard = pathname === "/dashboard";
+  const isMarketplace = pathname === "/marketPlace";
+
   return (
-    <nav className="flex items-center justify-between px-6 py-4 shadow bg-beige">
+    <nav className="flex items-center justify-between px-6 py-4 bg-beige border-none">
       <div className="flex items-center gap-4">
-        <button className="p-2" aria-label="Open menu">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect y="4" width="24" height="2" rx="1" fill="#333" />
-            <rect y="11" width="24" height="2" rx="1" fill="#333" />
-            <rect y="18" width="24" height="2" rx="1" fill="#333" />
-          </svg>
-        </button>
         <img
-          src="/logo-landzen.svg"
+          src="/logo-landzen.png"
           onClick={() => (window.location.href = "/recuiter/landingPage")}
           alt="Logo"
-          className="h-8 w-9 cursor-pointe"
+          className="h-12 w-13 cursor-pointer border-none"
         />
       </div>
-      <div className="relative flex-1 flex justify-center">
-        
+      <div>
+        <button 
+          onClick={()=>{window.location.href="/dashboard"}}
+          className={`text-green font-semibold px-2.5 transition-all duration-200 ${
+            isDashboard 
+              ? 'border-b-2 border-green pb-1' 
+              : 'hover:border-b-2 hover:border-green hover:pb-1'
+          }`}
+        >
+          Dashboard
+        </button>
+        <button 
+          onClick={()=>{window.location.href="/marketPlace"}}
+          className={`text-green font-semibold px-2.5 transition-all duration-200 ${
+            isMarketplace 
+              ? 'border-b-2 border-green pb-1' 
+              : 'hover:border-b-2 hover:border-green hover:pb-1'
+          }`}
+        >
+          Marketplace
+        </button>
+        <button className="ml-5 bg-moss-700 hover:bg-moss-800 rounded rounded-3xl px-4 py-3">Connect Wallet</button>
       </div>
-      <div className="w-23"></div>
     </nav>
   );
 }
