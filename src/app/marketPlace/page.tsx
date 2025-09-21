@@ -16,6 +16,13 @@ export default function Marketplace() {
   const [walletConnected, setConnected] = useState(false);
   const [favourited, setFavourited] = useState("all");
 
+  const handleBuy = (id: number | string) => {
+    console.log("handleBuy called with id:", id);
+    setSelectedId(id);
+  };
+
+  console.log("Current selectedId:", selectedId);
+
   return (
     <div>
       <MarketplaceHeader />
@@ -73,12 +80,12 @@ export default function Marketplace() {
           {favourited === "favourite" && !walletConnected ? (
             <div className="p-6 text-center text-red-600 font-semibold">
               <div>You need to connect to wallet first</div>
-              <button className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded rounded-3xl px-4 py-3 text-beige-100">
+              <button className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded-3xl px-4 py-3 text-beige-100">
                 Connect Wallet
               </button>
             </div>
           ) : (
-            <PropertyList onBuy={setSelectedId} />
+            <PropertyList onBuy={handleBuy} />
           )}
         </div>
       </div>
@@ -97,7 +104,7 @@ export default function Marketplace() {
               ×
             </button>
             <div className="p-4">
-              <PropertyInfoContent  />
+              <PropertyInfoContent />
             </div>
           </div>
         </div>

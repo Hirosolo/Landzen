@@ -31,7 +31,6 @@ export default function SearchBar({
           <div className="flex items-center">
             <span className="font-semibold text-beige-100">
               {isFilterOpen ? "Hide Filters" : "Show Filters"}{" "}
-          
             </span>
           </div>
         </button>
@@ -53,12 +52,12 @@ export default function SearchBar({
             viewBox="0 0 20 20"
             className=" [&amp;_path]:fill-current text-size-20 cursor-pointer text-info-lighten3"
           >
-            <g clip-path="url(#search-l_svg__a)">
+            <g clipPath="url(#search-l_svg__a)">
               <path
                 fill="#CED3DB"
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M15 9A6 6 0 1 1 3 9a6 6 0 0 1 12 0m-1.417 5.29a7 7 0 1 1 .707-.707l3.564 3.563a.5.5 0 1 1-.707.708z"
-                clip-rule="evenodd"
+                clipRule="evenodd"
               ></path>
             </g>
             <defs>
@@ -71,7 +70,8 @@ export default function SearchBar({
             placeholder="Search"
             aria-disabled="false"
             className="text-beige-100 flex-1 w-0 min-w-20 border-none bg-transparent text-info placeholder:text-info-disable focus-visible:outline-none disabled:cursor-not-allowed disabled:text-info-lighten2 text-left"
-            value=""
+            defaultValue=""
+            readOnly
           />
         </div>
 

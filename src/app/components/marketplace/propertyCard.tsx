@@ -1,31 +1,35 @@
 "use client";
-import { useState } from "react";
+import { PropertyData } from "@/lib/hooks";
+import { formatUSDTSafe, toBigInt } from "@/lib/utils";
+import Image from "next/image";
 
 type PropertyCardProps = {
-  id: number | string;
-  isFavorited?: boolean;
+  property: PropertyData;
   onBuy?: (id: number | string) => void;
 };
 
-export default function PropertyCard({
-  id,
-  isFavorited = false,
-  onBuy,
-}: PropertyCardProps) {
-  const [favourite, setFavourite] = useState(true);
+export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
+  // Safely convert values to BigInt for calculations
+  const totalValue = toBigInt(property.totalValue);
+  const availableShares = toBigInt(property.availableShares);
+  const totalShares = toBigInt(property.totalShares);
 
-  const current = 500000;
-  const total = 1000000;
-  const percentage = (current / total) * 100;
+  const availabilityPercentage =
+    totalShares > 0 ? Number((availableShares * BigInt(100)) / totalShares) : 0;
+
+  // Mock annual return as requested
+  const mockAnnualReturn = 10.36;
 
   return (
     <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white">
       {/* Image with overlay text */}
       <div className="relative">
-        <img
+        <Image
           className="w-full h-60 object-cover"
           src="/image-property.png"
           alt="Property"
+          width={400}
+          height={240}
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30"></div>
@@ -50,13 +54,11 @@ export default function PropertyCard({
 
       {/* Card body */}
       <div className="p-4 space-y-4">
-        {/* Location */}
-
         {/* Property title + type */}
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">VINHOMES GRAND PARK</h3>
+          <h3 className="font-bold text-gray-900">Property #{property.id}</h3>
           <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
-            Residential Home
+            {property.propertyTypeName}
           </span>
         </div>
 
@@ -64,15 +66,19 @@ export default function PropertyCard({
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <p className="text-gray-500 text-xs">Property Value</p>
-            <p className="font-bold text-gray-900">$1,000</p>
+            <p className="font-bold text-gray-900">
+              {formatUSDTSafe(totalValue)}
+            </p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Rental Yield</p>
-            <p className="font-bold text-gray-900">9.32%</p>
+            <p className="font-bold text-gray-900">
+              {property.apy.toFixed(2)}%
+            </p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Annual Return</p>
-            <p className="font-bold text-gray-900">10.36%</p>
+            <p className="font-bold text-gray-900">{mockAnnualReturn}%</p>
           </div>
         </div>
 
@@ -81,20 +87,23 @@ export default function PropertyCard({
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-green-500 h-2 rounded-full"
-              style={{ width: `${percentage}%` }}
+              style={{ width: `${availabilityPercentage}%` }}
             ></div>
           </div>
           <div className="flex justify-between items-center mt-1 text-xs">
             <span className="text-green font-medium">Available</span>
             <span className="text-gray-600">
-              {current.toLocaleString()}/{total.toLocaleString()}
+              {Number(availableShares)}/{Number(totalShares)} shares
             </span>
           </div>
         </div>
 
         {/* Invest button */}
         <button
-          onClick={() => onBuy?.(id)}
+          onClick={() => {
+            console.log("Invest button clicked for property:", property.id);
+            onBuy?.(property.id);
+          }}
           className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW
