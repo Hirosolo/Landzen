@@ -1,9 +1,47 @@
+"use client";
 import Image from "next/image";
+import { useGetAllProperties } from "@/lib/hooks";
+import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
-export default function VinhomesGrandPark() {
-  const raised = 800000;
-  const goal = 1000000;
-  const progress = (raised / goal) * 100;
+type PropertyInfoContentProps = {
+  propertyId: number | string;
+};
+
+export default function PropertyInfoContent({
+  propertyId,
+}: PropertyInfoContentProps) {
+  const { data: properties, isLoading } = useGetAllProperties();
+
+  // Find the specific property
+  const property = properties?.find((p) => p.id === propertyId);
+
+  if (isLoading || !property) {
+    return (
+      <div className="min-h-screen bg-beige-100 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Loading property details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate values using your formula
+  const totalValue = toBigInt(property.totalValue);
+  const totalShares = toBigInt(property.totalShares);
+  const availableShares = toBigInt(property.availableShares);
+  const soldShares = totalShares - availableShares;
+
+  // Project raised calculation: (totalValue / totalShares) * soldShares
+  const sharePrice = totalShares > 0 ? totalValue / totalShares : BigInt(0);
+  const projectRaised = sharePrice * soldShares;
+  const goal = totalValue;
+  const progress = goal > 0 ? Number((projectRaised * BigInt(100)) / goal) : 0;
+
+  // Investment details calculations
+  const nftPrice = sharePrice;
+  const rentalYield = property.apy;
+  const mockAnnualReturn = 10.36; // As discussed, keep this mocked
+  const mockProjectLength = "90 days"; // Mock value
 
   return (
     <div className="min-h-screen bg-beige-100 p-6">
@@ -13,7 +51,7 @@ export default function VinhomesGrandPark() {
           <div className="relative w-full h-80 rounded-2xl overflow-hidden shadow-md">
             <Image
               src="/image-property.png"
-              alt="Vinhomes Grand Park"
+              alt={`Property #${property.id}`}
               layout="fill"
               objectFit="cover"
             />
@@ -43,7 +81,7 @@ export default function VinhomesGrandPark() {
             </p>
             <div className="flex space-x-3">
               <span className="px-3 py-1 bg-moss-600 rounded-full text-sm font-medium text-beige-100">
-                Residential Home
+                {property.propertyTypeName}
               </span>
               <span className="px-3 py-1 bg-moss-600 rounded-full text-sm font-medium text-beige-100">
                 3 Bedrooms
@@ -53,26 +91,14 @@ export default function VinhomesGrandPark() {
               </span>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">
-              The Vinhomes Grand Park project in District 9 (Thu Duc City) is a
-              mega-urban park of the investor Vingroup owns a prime location at
-              Nguyen Xien & Phuoc Thien arterial streets of Long Thanh My ward –
-              District 9 – Thu Duc City – Ho Chi Minh City. Along with hundreds
-              of perfect utilities with a selling price of only 1.9 billion –
-              7.9 billion/apartment, supporting 80% loan with principal grace
-              and 0% interest rate, the project has been attracting thousands of
-              first-time residents. private and live. The total area of ​​the
-              super project is up to 271.8 hectares, providing the market with
-              thousands of high-end apartments arranged in 71 high-rise
-              apartment towers, with a total of more than 43,500 apartments +
-              1600 low-rise houses. floors of the type of townhouses and villas.
-              Since the investor had information to launch the market, the
-              Vinhome urban area in District 9 – Thu Duc has been highly
-              appreciated, receiving the attention of a large number of
-              customers as well as investors to find a new product. New products
-              for settlement – stable profitable investment. With a large area
-              but low construction density, most of the area of ​​the project is
-              for green living landscape, utilities and services that meet the
-              standard “ALL IN ONE – city in the heart of the city”.
+              Property #{property.id} - A premium real estate investment
+              opportunity featuring modern amenities and excellent location.
+              This property offers fractional ownership through blockchain
+              technology, providing transparent and secure investment
+              opportunities with competitive rental yields. The property is
+              strategically located in Ho Chi Minh City, one of the
+              fastest-growing markets in Southeast Asia, offering significant
+              potential for both rental income and capital appreciation.
             </p>
           </div>
         </div>
@@ -89,19 +115,24 @@ export default function VinhomesGrandPark() {
               ></div>
             </div>
             <p className="text-right text-sm text-gray-100">
-              {raised.toLocaleString()}/{goal.toLocaleString()}
+              {formatUSDTSafe(projectRaised)}/{formatUSDTSafe(goal)}
             </p>
           </div>
 
           {/* Financial Returns */}
           <div className="bg-moss-500 p-6 rounded-2xl shadow space-y-6">
-            <h3 className="font-semibold text-xl text-moss-900">Financial Returns</h3>
+            <h3 className="font-semibold text-xl text-moss-900">
+              Financial Returns
+            </h3>
             <div className="flex items-center space-x-2">
               <div className="flex w-full rounded-xl overflow-hidden border border-moss-700">
                 <input
                   type="number"
                   defaultValue={1}
+                  min={1}
+                  max={Number(availableShares)}
                   className="w-full p-3 text-lg font-semibold bg-beige-100 focus:outline-none text-moss-700"
+                  readOnly
                 />
                 <span className="flex items-center px-4 font-bold text-moss-700 bg-beige-100">
                   NFT
@@ -114,17 +145,17 @@ export default function VinhomesGrandPark() {
 
             <div className="grid grid-cols-2 gap-y-2 text-beige-100 text-base">
               <p className="font-semibold">Total Paid</p>
-              <p className="text-right">$1,000</p>
+              <p className="text-right">{formatUSDTSafe(nftPrice)}</p>
               <p className="font-semibold">Monthly Earned</p>
-              <p className="text-right">$1,000</p>
+              <p className="text-right">TBA</p>
               <p className="font-semibold">Annually Earned</p>
-              <p className="text-right">$1,000</p>
+              <p className="text-right">TBA</p>
               <p className="font-semibold">Start Date</p>
               <p className="text-right">TBA</p>
               <p className="font-semibold">End Date</p>
               <p className="text-right">TBA</p>
               <p className="font-semibold">Total Profit</p>
-              <p className="text-right">$1,000</p>
+              <p className="text-right">TBA</p>
             </div>
           </div>
 
@@ -133,27 +164,33 @@ export default function VinhomesGrandPark() {
             <h3 className="font-semibold text-lg">Investment Details</h3>
             <div className="grid grid-cols-2 gap-3 text-center">
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">$1,000</p>
+                <p className="font-bold text-moss-700">
+                  {formatUSDTSafe(totalValue)}
+                </p>
                 <p className="text-xs text-moss-700">Property Value</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">20</p>
+                <p className="font-bold text-moss-700">{Number(totalShares)}</p>
                 <p className="text-xs text-moss-700">Total Supply</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">$500</p>
+                <p className="font-bold text-moss-700">
+                  {formatUSDTSafe(nftPrice)}
+                </p>
                 <p className="text-xs text-moss-700">NFT Price</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">9.32%</p>
+                <p className="font-bold text-moss-700">
+                  {rentalYield.toFixed(2)}%
+                </p>
                 <p className="text-xs text-moss-700">Rental Yield</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">10.36%</p>
+                <p className="font-bold text-moss-700">{mockAnnualReturn}%</p>
                 <p className="text-xs text-moss-700">Annual Return</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">90 days</p>
+                <p className="font-bold text-moss-700">{mockProjectLength}</p>
                 <p className="text-xs text-moss-700">Project Length</p>
               </div>
             </div>
