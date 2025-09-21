@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
-import { useGetAllProperties } from "@/lib/hooks";
+import { useState } from "react";
+import { useGetAllProperties, usePurchaseShares } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
 type PropertyInfoContentProps = {
@@ -11,6 +12,9 @@ export default function PropertyInfoContent({
   propertyId,
 }: PropertyInfoContentProps) {
   const { data: properties, isLoading } = useGetAllProperties();
+  const [shareAmount, setShareAmount] = useState(1);
+  const { purchaseShares, isPending, isConfirming, isSuccess, error } =
+    usePurchaseShares();
 
   // Find the specific property
   const property = properties?.find((p) => p.id === propertyId);
@@ -42,6 +46,18 @@ export default function PropertyInfoContent({
   const rentalYield = property.apy;
   const mockAnnualReturn = 10.36; // As discussed, keep this mocked
   const mockProjectLength = "90 days"; // Mock value
+
+  // Calculate total cost based on selected amount
+  const totalCost = nftPrice * BigInt(shareAmount);
+
+  // Handle purchase
+  const handlePurchase = async () => {
+    try {
+      await purchaseShares(property.contractAddress, shareAmount);
+    } catch (err) {
+      console.error("Purchase failed:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-beige-100 p-6">
@@ -128,24 +144,51 @@ export default function PropertyInfoContent({
               <div className="flex w-full rounded-xl overflow-hidden border border-moss-700">
                 <input
                   type="number"
-                  defaultValue={1}
+                  value={shareAmount}
+                  onChange={(e) =>
+                    setShareAmount(Math.max(1, parseInt(e.target.value) || 1))
+                  }
                   min={1}
                   max={Number(availableShares)}
                   className="w-full p-3 text-lg font-semibold bg-beige-100 focus:outline-none text-moss-700"
-                  readOnly
                 />
                 <span className="flex items-center px-4 font-bold text-moss-700 bg-beige-100">
                   NFT
                 </span>
               </div>
-              <button className="bg-moss-700 text-beige-100 px-6 py-3 rounded-xl font-semibold">
-                INVEST
+              <button
+                onClick={handlePurchase}
+                disabled={
+                  isPending ||
+                  isConfirming ||
+                  shareAmount > Number(availableShares)
+                }
+                className="bg-moss-700 hover:bg-moss-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-beige-100 px-6 py-3 rounded-xl font-semibold transition-colors"
+              >
+                {isPending
+                  ? "Confirm..."
+                  : isConfirming
+                  ? "Processing..."
+                  : "INVEST"}
               </button>
             </div>
 
+            {/* Show success/error messages */}
+            {isSuccess && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                Successfully purchased {shareAmount} share
+                {shareAmount !== 1 ? "s" : ""}!
+              </div>
+            )}
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                Error: {error.message}
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-y-2 text-beige-100 text-base">
               <p className="font-semibold">Total Paid</p>
-              <p className="text-right">{formatUSDTSafe(nftPrice)}</p>
+              <p className="text-right">{formatUSDTSafe(totalCost)}</p>
               <p className="font-semibold">Monthly Earned</p>
               <p className="text-right">TBA</p>
               <p className="font-semibold">Annually Earned</p>

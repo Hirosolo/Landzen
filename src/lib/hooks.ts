@@ -1,8 +1,8 @@
 'use client'
 
-import { useReadContract } from 'wagmi'
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { LandTokenizerABI } from './abis'
+import { LandTokenizerABI, LandABI } from './abis'
 import { CONTRACT_ADDRESSES } from './contracts'
 import { baseSepolia } from './wagmi'
 
@@ -433,5 +433,37 @@ export async function fetchPropertyData(propertyId: number): Promise<PropertyDat
   } catch (error) {
     console.error(`Error fetching property ${propertyId}:`, error)
     return null
+  }
+}
+
+// Hook for purchasing shares
+export function usePurchaseShares() {
+  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  })
+
+  const purchaseShares = async (contractAddress: string, shareAmount: number) => {
+    try {
+      await writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: LandABI,
+        functionName: 'purchaseShares',
+        args: [BigInt(shareAmount)],
+      })
+    } catch (err) {
+      console.error('Error purchasing shares:', err)
+      throw err
+    }
+  }
+
+  return {
+    purchaseShares,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    hash
   }
 }
