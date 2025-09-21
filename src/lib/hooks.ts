@@ -2,7 +2,7 @@
 
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { LandTokenizerABI, LandABI } from './abis'
+import { LandTokenizerABI, LandABI, MockUSDTABI } from './abis'
 import { CONTRACT_ADDRESSES } from './contracts'
 import { baseSepolia } from './wagmi'
 
@@ -460,6 +460,38 @@ export function usePurchaseShares() {
 
   return {
     purchaseShares,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    hash
+  }
+}
+
+// Hook for minting USDT (faucet)
+export function useMintUSDT() {
+  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  })
+
+  const mintUSDT = async (toAddress: string, amount: bigint) => {
+    try {
+      await writeContract({
+        address: CONTRACT_ADDRESSES.USDT as `0x${string}`,
+        abi: MockUSDTABI,
+        functionName: 'mint',
+        args: [toAddress as `0x${string}`, amount],
+      })
+    } catch (err) {
+      console.error('Error minting USDT:', err)
+      throw err
+    }
+  }
+
+  return {
+    mintUSDT,
     isPending,
     isConfirming,
     isSuccess,
