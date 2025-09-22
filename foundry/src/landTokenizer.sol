@@ -51,6 +51,9 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         _;
     }
 
+    event blacklistUpdated(address indexed addr, bool isBlacklisted);
+    event validatorUpdated(address indexed addr, bool isValidator);
+
     constructor() Ownable(msg.sender) {
         validators[msg.sender] = true;
     }
@@ -60,6 +63,22 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
 
     function blacklistAddress(address addr) external onlyOwner validAddress(addr) {
         blacklist[addr] = true;
+        emit blacklistUpdated(addr, true);
+    }
+
+    function unblacklistAddress(address addr) external onlyOwner validAddress(addr) {
+        blacklist[addr] = false;
+        emit blacklistUpdated(addr, false);
+    }
+
+    function addValidator(address addr) external onlyOwner validAddress(addr) {
+        validators[addr] = true;
+        emit validatorUpdated(addr, true);
+    }
+
+    function removeValidator(address addr) external onlyOwner validAddress(addr) {
+        validators[addr] = false;
+        emit validatorUpdated(addr, false);
     }
 
     function isValidator(address _addr) external view returns (bool) {
