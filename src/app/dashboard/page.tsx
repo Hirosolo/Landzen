@@ -3,7 +3,7 @@
 import { useState } from "react";
 import BalanceChart from "../components/dashBoard/BalanceChart";
 import StatsCards from "../components/dashBoard/StatsCards";
-import PositionsTable from "../components/dashBoard/PositionsTable";
+import MyPositionSection from "../components/dashBoard/myPosition";
 import MarketplaceSearchBar from "../components/marketplace/header";
 
 export default function Dashboard() {
@@ -69,7 +69,7 @@ export default function Dashboard() {
           />
 
           {/* Positions table */}
-          <PositionsTable positions={data} onAddPosition={handleAddPosition} />
+          <MyPositionSection/>
         </div>
       </main>
     </div>
