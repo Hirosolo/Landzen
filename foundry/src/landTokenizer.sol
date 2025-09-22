@@ -10,15 +10,53 @@ import "./land.sol";
 
 contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     IERC20 public paymentStableToken = IERC20(0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55);
+    uint256 public landCount = 0;
+
+    /**
+     * @dev In order for the business to tokenize a land, the validator must already verify the land ownership and other details off-chain.
+     */
+    struct LandInfo
+    {
+        address contractAddress;
+        uint256 totalValue;
+        uint256 totalSupply;
+        uint256 yieldRate; // yield per block
+        uint256 tokenizeAt;
+        uint256 landType;
+        bool isActive;     
+    }
     
     mapping(address => bool) public validators;
+    mapping(uint256 => LandInfo) public lands;
+    mapping(address => bool) public landzenLands; // this map will tell which land get tokenized by LandZen 
 
     modifier onlyValidator() {
         require(validators[msg.sender], "Not a validator");
         _;
     }
 
+    modifier onlyLandZenLand(address landAddress) {
+        require(landzenLands[landAddress], "Not a LandZen land");
+        _;
+    }
+
+    modifier validAddress(address addr) {
+        require(addr != address(0), "Invalid address");
+        _;
+    }
+
+    constructor() Ownable(msg.sender) {
+        validators[msg.sender] = true;
+    }
+
+    // TODO: Finished land.sol then implement this function
+    function tokenizeLand() {}
+
     function isValidator(address _addr) external view returns (bool) {
         return validators[_addr];
+    }
+
+    function getLandInfo(uint256 landId) external view returns (LandInfo memory) {
+        return lands[landId];
     }
 }
