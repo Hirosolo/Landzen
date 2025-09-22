@@ -24,11 +24,12 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
       {/* Image */}
       <div className="relative">
         <Image
-          className="w-full h-60 object-cover"
+          className="w-full h-60 object-cover select-none pointer-events-none"
           src="/image-property.png"
           alt="Property"
           width={400}
           height={240}
+          draggable={false}
         />
         <div className="absolute inset-0 bg-black/30"></div>
 

@@ -29,6 +29,7 @@ export default function LandingPagePropertyList({ onBuy }: PropertyListProps) {
     if (!el) return;
 
     const handleMouseDown = (e: MouseEvent) => {
+      e.preventDefault();
       setIsDown(true);
       setStartX(e.pageX - el.offsetLeft);
       setScrollLeft(el.scrollLeft);
@@ -81,12 +82,14 @@ export default function LandingPagePropertyList({ onBuy }: PropertyListProps) {
     el.addEventListener("mouseleave", handleMouseLeave);
     el.addEventListener("mouseup", handleMouseUp);
     el.addEventListener("mousemove", handleMouseMove);
+    el.addEventListener("dragstart", (e) => e.preventDefault());
 
     return () => {
       el.removeEventListener("mousedown", handleMouseDown);
       el.removeEventListener("mouseleave", handleMouseLeave);
       el.removeEventListener("mouseup", handleMouseUp);
       el.removeEventListener("mousemove", handleMouseMove);
+      el.removeEventListener("dragstart", (e) => e.preventDefault());
     };
   }, [isDown, startX, scrollLeft]);
 
@@ -143,8 +146,8 @@ export default function LandingPagePropertyList({ onBuy }: PropertyListProps) {
     <div className="pt-4 w-full">
       <div
         ref={scrollRef}
-        className="relative flex items-center space-x-6 overflow-x-scroll scrollbar-hide px-8 py-8 cursor-grab active:cursor-grabbing"
-        style={{ WebkitOverflowScrolling: "touch" }}
+        className="relative flex items-center space-x-6 overflow-x-scroll scrollbar-hide px-8 py-8 cursor-grab active:cursor-grabbing select-none"
+        style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
       >
         {loopedProperties.map((property, idx) => (
           <AnimatedGalleryItem key={`${property.id}-${idx}`} containerRef={scrollRef}>
