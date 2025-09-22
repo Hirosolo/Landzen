@@ -82,6 +82,10 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     ///////////////////////////// SETTER FUNCTIONS /////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
+    function setPaymentStableToken(address _tokenAddress) external onlyOwner validAddress(_tokenAddress) {
+        paymentStableToken = IERC20(_tokenAddress);
+    }
+    
     function blacklistAddress(address addr) external onlyOwner validAddress(addr) {
         blacklist[addr] = true;
         emit blacklistUpdated(addr, true);
