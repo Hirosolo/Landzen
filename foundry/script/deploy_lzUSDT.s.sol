@@ -9,7 +9,7 @@ contract DeployLzUSDT is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
 
-        vm.startBroadcast();
+        vm.startBroadcast(deployerPrivateKey);
 
         lzUSDT lzUsdt = new lzUSDT(deployer);
         console.log("lzUSDT deployed to:", address(lzUsdt));
