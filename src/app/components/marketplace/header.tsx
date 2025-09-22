@@ -7,6 +7,7 @@ export default function MarketplaceSearchBar() {
   
   const isDashboard = pathname === "/dashboard";
   const isMarketplace = pathname === "/marketPlace";
+  const isFaucet = pathname === "/faucet";
 
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-beige border-none">
@@ -46,6 +47,19 @@ export default function MarketplaceSearchBar() {
           }`}
         >
           Marketplace
+        </button>
+
+        <button
+          onClick={() => {
+            window.location.href = "/faucet";
+          }}
+          className={`text-green font-semibold px-2.5 transition-all duration-200 ${
+            isFaucet
+              ? "border-b-2 border-green pb-1"
+              : "hover:border-b-2 hover:border-green hover:pb-1"
+          }`}
+        >
+          Faucet
         </button>
 
         {/* RainbowKit Connect Button */}
