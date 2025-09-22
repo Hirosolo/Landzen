@@ -1,8 +1,16 @@
 // Contract addresses on Base Sepolia
 export const CONTRACT_ADDRESSES = {
-  USDT: "0x6030fD1803a5bE7bAa994F9065995d1F0777f567",
+  USDT: "0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55", // lzUSDT contract (updated deployment)
   LAND_TOKENIZER: "0x5A6C7b515328E1598d3F1B62E2404f8B525D4E86",
   DEPLOYER: "0x7EA634e331CF7b503df2e224f77a7C589462F1F2"
+} as const;
+
+// Token metadata for lzUSDT
+export const LZUSDT_TOKEN = {
+  address: CONTRACT_ADDRESSES.USDT,
+  symbol: "lzUSDT",
+  name: "Landzen USDT",
+  decimals: 18,
 } as const;
 
 // Property type mapping
@@ -14,9 +22,9 @@ export const PROPERTY_TYPES = {
   5: { name: "Retail" }
 } as const;
 
-// Helper functions for USDT formatting (6 decimals)
+// Helper functions for USDT formatting (18 decimals for lzUSDT)
 export const formatUSDT = (amount: bigint): string => {
-  const value = Number(amount) / 1e6;
+  const value = Number(amount) / 1e18;
   return value.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -25,7 +33,7 @@ export const formatUSDT = (amount: bigint): string => {
 };
 
 export const parseUSDT = (amount: string): bigint => {
-  return BigInt(Math.floor(parseFloat(amount) * 1e6));
+  return BigInt(Math.floor(parseFloat(amount) * 1e18));
 };
 
 // Helper functions for calculations
