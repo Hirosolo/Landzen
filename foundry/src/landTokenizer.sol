@@ -9,6 +9,11 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./land.sol";
 
 contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////// STATES ////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
     IERC20 public paymentStableToken = IERC20(0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55);
     uint256 public landCount = 0;
 
@@ -31,6 +36,9 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     mapping(address => bool) public landzenLands; // this map will tell which land get tokenized by LandZen
     mapping(address => bool) public blacklist; // blacklist of investors
 
+    ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////// MODIFIERS ////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     modifier onlyValidator() {
         require(validators[msg.sender], "Not a validator");
         _;
@@ -51,15 +59,27 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         _;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////// EVENTS ////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     event blacklistUpdated(address indexed addr, bool isBlacklisted);
     event validatorUpdated(address indexed addr, bool isValidator);
+    event EmergencyPauseAll();
+    event EmergencyUnpauseAll();
 
     constructor() Ownable(msg.sender) {
         validators[msg.sender] = true;
     }
 
     // TODO: Finished land.sol then implement this function
-    function tokenizeLand() {}
+    function tokenizeLand() {
+        uint256 landId = landCount + 1;
+        landCount = landId;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////// SETTER FUNCTIONS /////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     function blacklistAddress(address addr) external onlyOwner validAddress(addr) {
         blacklist[addr] = true;
@@ -81,10 +101,19 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         emit validatorUpdated(addr, false);
     }
 
-    function isValidator(address _addr) external view returns (bool) {
-        return validators[_addr];
+    function emergencyPauseAll() external onlyOwner {
+        _pause();
+        emit EmergencyPauseAll();
     }
 
+    function unpauseAll() external onlyOwner {
+        _unpause();
+        emit EmergencyUnpauseAll();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////// GETTER FUNCTIONS /////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     function getLandInfo(uint256 landId) external view returns (LandInfo memory) {
         return lands[landId];
     }
