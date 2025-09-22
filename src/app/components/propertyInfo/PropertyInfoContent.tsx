@@ -21,7 +21,7 @@ export default function PropertyInfoContent({
 
   if (isLoading || !property) {
     return (
-      <div className="min-h-screen bg-beige-100 p-6 flex items-center justify-center">
+      <div className=" bg-beige-100 p-6 flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg text-gray-600">Loading property details...</p>
         </div>
@@ -60,7 +60,7 @@ export default function PropertyInfoContent({
   };
 
   return (
-    <div className="min-h-screen bg-beige-100 p-6">
+    <div className=" bg-beige-100 p-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {/* Left Section */}
         <div className="col-span-2 space-y-4">

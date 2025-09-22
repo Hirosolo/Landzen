@@ -13,9 +13,15 @@ export default function DashBoardPropertyCard({
   onBuy,
 }: PropertyCardProps) {
   // Safely convert values to BigInt for calculations
-  const totalValue = toBigInt(property.totalValue);
-  const availableShares = toBigInt(property.availableShares);
-  const totalShares = toBigInt(property.totalShares);
+  const totalValue = property.totalValue !== undefined && property.totalValue !== null
+    ? toBigInt(property.totalValue)
+    : BigInt(0);
+  const availableShares = property.availableShares !== undefined && property.availableShares !== null
+    ? toBigInt(property.availableShares)
+    : BigInt(0);
+  const totalShares = property.totalShares !== undefined && property.totalShares !== null
+    ? toBigInt(property.totalShares)
+    : BigInt(0);
 
   const availabilityPercentage =
     totalShares > 0 ? Number((availableShares * BigInt(100)) / totalShares) : 0;
@@ -23,8 +29,23 @@ export default function DashBoardPropertyCard({
   // Mock annual return as requested
   const mockAnnualReturn = 10.36;
 
+  const totalValueStr = property.totalValue !== undefined && property.totalValue !== null
+    ? formatUSDTSafe(totalValue)
+    : "NaN";
+  const apyStr = property.apy !== undefined && property.apy !== null
+    ? property.apy.toFixed(2) + "%"
+    : "NaN";
+  const availableSharesStr = (property.availableShares !== undefined && property.totalShares !== undefined)
+    ? `${Number(availableShares)}/${Number(totalShares)} shares`
+    : "NaN";
+
   return (
-    <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white">
+    <div
+      className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01]"
+      onClick={() => onBuy?.(property.id)}
+      role="button"
+      tabIndex={0}
+    >
       {/* Image with overlay text */}
       <div className="relative">
         <Image
@@ -69,15 +90,11 @@ export default function DashBoardPropertyCard({
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <p className="text-gray-500 text-xs">Property Value</p>
-            <p className="font-bold text-gray-900">
-              {formatUSDTSafe(totalValue)}
-            </p>
+            <p className="font-bold text-gray-900">{totalValueStr}</p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Rental Yield</p>
-            <p className="font-bold text-gray-900">
-              {property.apy.toFixed(2)}%
-            </p>
+            <p className="font-bold text-gray-900">{apyStr}</p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Annual Return</p>
@@ -95,15 +112,13 @@ export default function DashBoardPropertyCard({
           </div>
           <div className="flex justify-between items-center mt-1 text-xs">
             <span className="text-green font-medium">Available</span>
-            <span className="text-gray-600">
-              {Number(availableShares)}/{Number(totalShares)} shares
-            </span>
+            <span className="text-gray-600">{availableSharesStr}</span>
           </div>
         </div>
 
         {/* Invest button */}
         <button
-          onClick={() => onBuy?.(property.id)}
+          onClick={(e) => { e.stopPropagation(); onBuy?.(property.id); }}
           className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW
