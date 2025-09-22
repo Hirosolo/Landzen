@@ -27,8 +27,9 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 totalSupply;
         uint256 yieldRate; // yield per block
         uint256 tokenizeAt;
+        uint256 startDate; // in blocks
+        uint256 projectLength; // in blocks
         uint256 landType;
-        bool isActive;     
     }
     
     mapping(address => bool) public validators;
