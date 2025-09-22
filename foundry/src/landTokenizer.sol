@@ -26,7 +26,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 totalValue;
         uint256 totalSupply;
         uint256 yieldRate; // yield per block
-        uint256 tokenizeAt;
         uint256 startDate; // in blocks
         uint256 projectLength; // in blocks
         uint256 landType;
@@ -85,7 +84,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     function setPaymentStableToken(address _tokenAddress) external onlyOwner validAddress(_tokenAddress) {
         paymentStableToken = IERC20(_tokenAddress);
     }
-    
+
     function blacklistAddress(address addr) external onlyOwner validAddress(addr) {
         blacklist[addr] = true;
         emit blacklistUpdated(addr, true);
