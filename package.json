@@ -9,10 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@appletosolutions/reactbits": "^1.0.3",
+    "@chakra-ui/react": "^3.27.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-popover": "^1.1.15",
     "@rainbow-me/rainbowkit": "^2.2.8",
+    "@react-three/drei": "^10.7.6",
     "@tanstack/react-query": "^5.89.0",
     "@wagmi/core": "^2.21.0",
     "framer-motion": "^12.23.16",
@@ -21,6 +26,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "recharts": "^3.2.1",
+    "three": "^0.150.1",
     "viem": "^2.37.7",
     "wagmi": "^2.17.1"
   },

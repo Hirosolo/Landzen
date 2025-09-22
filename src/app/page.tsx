@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import MarketplaceSearchBar from "./components/marketplace/header";
 import LandingPageNavBars from "./components/landingPage/page";
-import PropertyList from "./components/marketplace/propertyList";
+import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
 import LandingPageGuide from "./components/landingPage/guide";
 import AboutUs from "./components/landingPage/aboutUs";
 import FAQ from "./components/landingPage/FAQ";
@@ -62,7 +62,7 @@ export default function LandingPage() {
             View more
           </a>
         </div>
-        <PropertyList/>
+        <LandingPagePropertyList/>
       </section>
 
       {/* About Us */}
