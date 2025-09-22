@@ -28,7 +28,8 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     
     mapping(address => bool) public validators;
     mapping(uint256 => LandInfo) public lands;
-    mapping(address => bool) public landzenLands; // this map will tell which land get tokenized by LandZen 
+    mapping(address => bool) public landzenLands; // this map will tell which land get tokenized by LandZen
+    mapping(address => bool) public blacklist; // blacklist of investors
 
     modifier onlyValidator() {
         require(validators[msg.sender], "Not a validator");
@@ -45,12 +46,21 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         _;
     }
 
+    modifier notBlacklisted(address addr) {
+        require(!blacklist[addr], "Address is blacklisted");
+        _;
+    }
+
     constructor() Ownable(msg.sender) {
         validators[msg.sender] = true;
     }
 
     // TODO: Finished land.sol then implement this function
     function tokenizeLand() {}
+
+    function blacklistAddress(address addr) external onlyOwner validAddress(addr) {
+        blacklist[addr] = true;
+    }
 
     function isValidator(address _addr) external view returns (bool) {
         return validators[_addr];
