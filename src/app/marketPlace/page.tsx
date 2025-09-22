@@ -5,6 +5,7 @@ import PropertyList from "@/app/components/marketplace/propertyList";
 import Paging from "@/app/components/marketplace/paging";
 import { useState } from "react";
 import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoContent";
+import { AnimatePresence, motion } from "framer-motion";
 import SearchBar from "../components/marketplace/searchBar";
 import FilterSidebar from "../components/marketplace/filterSidebar";
 
@@ -93,22 +94,36 @@ export default function Marketplace() {
       {/*paging */}
       <Paging />
 
-      {/* PropertyInfo modal overlay */}
-      {selectedId !== null && (
-        <div className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+      {/* PropertyInfo modal overlay with pop/explode animation */}
+      <AnimatePresence>
+        {selectedId !== null && (
+          <motion.div
+            className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
+              initial={{ scale: 0.9, opacity: 0, filter: "blur(6px)" }}
+              animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+              exit={{ scale: 0.92, opacity: 0, filter: "blur(6px)" }}
+              transition={{ type: "spring", stiffness: 220, damping: 20 }}
+              layout
             >
-              ×
-            </button>
-            <div className="p-4">
-              <PropertyInfoContent propertyId={selectedId} />
-            </div>
-          </div>
-        </div>
-      )}
+              <button
+                onClick={closeModal}
+                className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+              <div className="p-4">
+                <PropertyInfoContent propertyId={selectedId} />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

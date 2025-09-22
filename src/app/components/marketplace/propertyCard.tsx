@@ -21,7 +21,12 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
   const mockAnnualReturn = 10.36;
 
   return (
-    <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white">
+    <div
+      className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01]"
+      onClick={() => onBuy?.(property.id)}
+      role="button"
+      tabIndex={0}
+    >
       {/* Image with overlay text */}
       <div className="relative">
         <Image
@@ -100,7 +105,7 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
 
         {/* Invest button */}
         <button
-          onClick={() => onBuy?.(property.id)}
+          onClick={(e) => { e.stopPropagation(); onBuy?.(property.id); }}
           className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW
