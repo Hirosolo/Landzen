@@ -1,152 +1,209 @@
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+import { useGetAllProperties, usePurchaseShares } from "@/lib/hooks";
+import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
-export default function DashBoardPropertyInfo() {
+type PropertyInfoContentProps = {
+  propertyId: number | string;
+};
+
+export default function PropertyInfoContent({
+  propertyId,
+}: PropertyInfoContentProps) {
+  const { data: properties, isLoading } = useGetAllProperties();
+  const [shareAmount, setShareAmount] = useState(1);
+  const { purchaseShares, isPending, isConfirming, isSuccess, error } =
+    usePurchaseShares();
+
+  // Find the specific property
+  const property = properties?.find((p) => p.id === propertyId);
+
+  if (isLoading || !property) {
     return (
-      <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-beige-100">
-        {/* Left side */}
-        <div className="space-y-4">
-          {/* Main image */}
-          <img
-            src="/image-property.png"
-            alt="Property"
-            className="w-full h-72 object-cover rounded-xl shadow"
-          />
-  
-          {/* Thumbnails */}
-          <div className="grid grid-cols-3 gap-2">
-            <img src="/image-property.png" className="h-24 w-full object-cover rounded-md" />
-            <img src="/image-property.png" className="h-24 w-full object-cover rounded-md" />
-            <img src="/image-property.png" className="h-24 w-full object-cover rounded-md" />
+      <div className=" bg-beige-100 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Loading property details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate values using your formula
+  const totalValue = toBigInt(property.totalValue);
+  const totalShares = toBigInt(property.totalShares);
+  const availableShares = toBigInt(property.availableShares);
+  const soldShares = totalShares - availableShares;
+
+  // Project raised calculation: (totalValue / totalShares) * soldShares
+  const sharePrice = totalShares > 0 ? totalValue / totalShares : BigInt(0);
+  const projectRaised = sharePrice * soldShares;
+  const goal = totalValue;
+  const progress = goal > 0 ? Number((projectRaised * BigInt(100)) / goal) : 0;
+
+  // Investment details calculations
+  const nftPrice = sharePrice;
+  const rentalYield = property.apy;
+  const mockAnnualReturn = 10.36; // As discussed, keep this mocked
+  const mockProjectLength = "90 days"; // Mock value
+
+  // Calculate total cost based on selected amount
+  const totalCost = nftPrice * BigInt(shareAmount);
+
+  // Handle purchase
+  const handlePurchase = async () => {
+    try {
+      await purchaseShares(property.contractAddress, shareAmount);
+    } catch (err) {
+      console.error("Purchase failed:", err);
+    }
+  };
+
+  return (
+    <div className=" bg-beige-100 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {/* Left Section */}
+        <div className="col-span-2 space-y-4">
+          <div className="relative w-full h-80 rounded-2xl overflow-hidden shadow-md">
+            <Image
+              src="/image-property.png"
+              alt={`Property #${property.id}`}
+              layout="fill"
+              objectFit="cover"
+            />
           </div>
-  
-          {/* Location + description */}
-          <div className="space-y-3">
-            <div className="flex items-center text-gray-600 text-sm font-medium">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 mr-1 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="relative w-full h-28 rounded-xl overflow-hidden shadow"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 21c4.97-4.97 8-8.03 8-11.5A8 8 0 004 9.5C4 13 7.03 16.03 12 21z"
+                <Image
+                  src={`/image-property.png`}
+                  alt={`Thumbnail ${i}`}
+                  layout="fill"
+                  objectFit="cover"
                 />
-                <circle cx="12" cy="9.5" r="2.5" />
-              </svg>
-              Ho Chi Minh
+              </div>
+            ))}
+          </div>
+
+          {/* Property Details */}
+          <div className="bg-beigi-100 rounded-2xl shadow p-4 space-y-4 text-moss-600">
+            <h2 className="text-xl font-semibold">Properties Details</h2>
+            <p className="flex items-center space-x-2 text-moss-600">
+              <span>📍</span>
+              <span>Ho Chi Minh</span>
+            </p>
+            <div className="flex space-x-3">
+              <span className="px-3 py-1 bg-moss-600 rounded-full text-sm font-medium text-beige-100">
+                {property.propertyTypeName}
+              </span>
+              <span className="px-3 py-1 bg-moss-600 rounded-full text-sm font-medium text-beige-100">
+                3 Bedrooms
+              </span>
+              <span className="px-3 py-1 bg-moss-600 rounded-full text-sm font-medium text-beige-100">
+                2 Bathrooms
+              </span>
             </div>
-  
-            <p className="text-sm text-gray-700 leading-relaxed">
-              Phuoc Thien arterial streets of Long Thanh My ward – District 9 – Thu Duc City –
-              Ho Chi Minh City. Along with hundreds of perfect utilities with a selling price
-              of only 1.9 billion – 7.9 billion/apartment, supporting 80% loan with principal
-              grace and 0% interest rate, the project has been attracting thousands of
-              first-time residents. Private and live...
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Property #{property.id} - A premium real estate investment
+              opportunity featuring modern amenities and excellent location.
+              This property offers fractional ownership through blockchain
+              technology, providing transparent and secure investment
+              opportunities with competitive rental yields. The property is
+              strategically located in Ho Chi Minh City, one of the
+              fastest-growing markets in Southeast Asia, offering significant
+              potential for both rental income and capital appreciation.
             </p>
           </div>
         </div>
-  
-        {/* Right side */}
+
+        {/* Right Section */}
         <div className="space-y-6">
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">VINHOMES GRAND PARK</h1>
-            <span className="text-sm bg-green-100 text-green-600 font-semibold px-2 py-1 rounded">
-              APY 10%
-            </span>
-          </div>
-  
-          {/* Progress */}
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="bg-green-100 text-green-600 px-2 py-0.5 rounded">Available</span>
-              <span className="text-gray-600">500.000/1.000.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{ width: "50%" }}></div>
-            </div>
-          </div>
-  
-          {/* Price info */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <p className="text-gray-500 text-sm">PROPERTY VALUE</p>
-              <p className="text-lg font-bold text-black">$1.000</p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">PRICE PER TOKEN</p>
-              <p className="text-lg font-bold text-black">$0.01</p>
-            </div>
-          </div>
-  
-          {/* Buy input */}
-          <div className="flex items-center border rounded-lg p-2">
-            <input
-              type="number"
-              placeholder="1.000"
-              className="flex-1 px-2 py-1 outline-none text-gray-800"
-            />
-            <span className="px-3 text-gray-600 font-semibold">VGP</span>
-            <span className="px-3 text-gray-600">$100</span>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-              BUY NOW
-            </button>
-          </div>
-  
-          {/* Overview */}
-          <div className="border rounded-xl p-4 space-y-4">
-            <h2 className="font-semibold text-gray-800">Overview</h2>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Type</p>
-                <p className="font-medium">Residential Home</p>
+          {/* Top Offer Section */}
+          <div className="bg-moss-500 p-4 rounded-2xl shadow">
+            <div className="grid grid-cols-3 text-center text-beige-100">
+              <div>
+                <p className="text-sm font-medium">Top offer</p>
+                <p className="text-lg font-bold">-</p>
               </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Area</p>
-                <p className="font-medium">180</p>
+              <div>
+                <p className="text-sm font-medium">Collection floor</p>
+                <p className="text-lg font-bold">{formatUSDTSafe(nftPrice)}</p>
               </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Bedrooms</p>
-                <p className="font-medium">Residential Home</p>
-              </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Restrooms</p>
-                <p className="font-medium">Residential Home</p>
-              </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Parking</p>
-                <p className="font-medium">180</p>
-              </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Year built</p>
-                <p className="font-medium">Residential Home</p>
+              <div>
+                <p className="text-sm font-medium">Last sale</p>
+                <p className="text-lg font-bold">-</p>
               </div>
             </div>
+            <div className="flex justify-between mt-4 space-x-3">
+              <button className="flex-1 bg-moss-700 hover:bg-moss-800 text-beige-100 py-2 rounded-xl font-semibold transition-colors">
+                List for sale
+              </button>
+              <button className="flex-1 bg-beige-100 hover:bg-gray-200 text-moss-700 py-2 rounded-xl font-semibold transition-colors">
+                Send
+              </button>
+            </div>
           </div>
-  
-          {/* Economics */}
-          <div className="border rounded-xl p-4 space-y-4">
-            <h2 className="font-semibold text-gray-800">Economics</h2>
-            <div className="grid grid-cols-3 gap-3 text-sm">
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Model</p>
-                <p className="font-medium">Rental Income</p>
+
+          {/* Financial Returns */}
+          <div className="bg-moss-500 p-6 rounded-2xl shadow space-y-4">
+            <h3 className="font-semibold text-lg text-beige-100">
+              Financial Returns
+            </h3>
+            <div className="grid grid-cols-2 gap-y-2 text-beige-100 text-base">
+              <p className="font-semibold">Monthly Earned</p>
+              <p className="text-right">{formatUSDTSafe(nftPrice)}</p>
+              <p className="font-semibold">Annually Earned</p>
+              <p className="text-right">{formatUSDTSafe(nftPrice)}</p>
+              <p className="font-semibold">Start Date</p>
+              <p className="text-right">TBA</p>
+              <p className="font-semibold">End Date</p>
+              <p className="text-right">TBA</p>
+            </div>
+          </div>
+
+          {/* Investment Details */}
+          <div className="bg-moss-500 p-4 rounded-2xl shadow space-y-4">
+            <h3 className="font-semibold text-lg text-beige-100">
+              Investment Details
+            </h3>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="font-bold text-moss-700">
+                  {formatUSDTSafe(totalValue)}
+                </p>
+                <p className="text-xs text-moss-700">Property Value</p>
               </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Income/ month</p>
-                <p className="font-medium">$1,200</p>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="font-bold text-moss-700">{Number(totalShares)}</p>
+                <p className="text-xs text-moss-700">Total Supply</p>
               </div>
-              <div className="border rounded-md p-2">
-                <p className="text-gray-500">Holders</p>
-                <p className="font-medium">145</p>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="font-bold text-moss-700">
+                  {formatUSDTSafe(nftPrice)}
+                </p>
+                <p className="text-xs text-moss-700">NFT Price</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="font-bold text-moss-700">
+                  {rentalYield.toFixed(2)}%
+                </p>
+                <p className="text-xs text-moss-700">Rental Yield</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="font-bold text-moss-700">{mockAnnualReturn}%</p>
+                <p className="text-xs text-moss-700">Annual Return</p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="font-bold text-moss-700">{mockProjectLength}</p>
+                <p className="text-xs text-moss-700">Project Length</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
-  }
-  
+    </div>
+  );
+}

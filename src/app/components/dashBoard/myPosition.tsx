@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import DashBoardPropertyInfo from "./dashBoardPropertyInfo";
 import { FiSearch } from "react-icons/fi";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
@@ -50,9 +52,13 @@ const properties = [
 ];
 
 // Property Card
-function PropertyCard({ property }: { property: (typeof properties)[0] }) {
+function PropertyCard({ property, onSelect }: { property: (typeof properties)[0]; onSelect: (id: number) => void; }) {
   return (
-    <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white">
+    <motion.div
+      className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white cursor-pointer"
+      onClick={() => onSelect(property.id)}
+      layoutId={`dashboard-property-${property.id}`}
+    >
       {/* Image */}
       <div className="relative">
         <Image
@@ -124,7 +130,7 @@ function PropertyCard({ property }: { property: (typeof properties)[0] }) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -132,6 +138,7 @@ function PropertyCard({ property }: { property: (typeof properties)[0] }) {
 export default function MyPositionSection() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("name-asc");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   // Filter + Sort
   const filteredProperties = properties
@@ -147,6 +154,7 @@ export default function MyPositionSection() {
     });
 
   return (
+    <LayoutGroup>
     <section className="bg-green p-6 md:p-8">
       {/* Title */}
       <h1 className="text-white text-2xl md:text-[28px] font-extrabold tracking-wide mb-6">MY POSITION</h1>
@@ -189,9 +197,37 @@ export default function MyPositionSection() {
       {/* Cards Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredProperties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
+          <PropertyCard key={property.id} property={property} onSelect={(id) => setSelectedId(id)} />
         ))}
       </div>
+
+      <AnimatePresence>
+        {selectedId !== null && (
+          <motion.div
+            className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
+              layoutId={`dashboard-property-${selectedId}`}
+              transition={{ type: "spring", stiffness: 220, damping: 24 }}
+            >
+              <button
+                onClick={() => setSelectedId(null)}
+                className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+              <div className="p-4">
+                <DashBoardPropertyInfo propertyId={selectedId} />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
+    </LayoutGroup>
   );
 }
