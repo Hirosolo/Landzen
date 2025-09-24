@@ -60,7 +60,7 @@ export default function PropertyInfoContent({
   };
 
   return (
-    <div className=" bg-beige-100 p-6">
+    <div className=" bg-beige-100 p-6 overflow-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {/* Left Section */}
         <div className="col-span-2 space-y-4">
@@ -120,7 +120,7 @@ export default function PropertyInfoContent({
         </div>
 
         {/* Right Section */}
-        <div className="space-y-6">
+        <div className="col-span-1 space-y-6">
           {/* Top Offer Section */}
           <div className="bg-moss-500 p-4 rounded-2xl shadow">
             <div className="grid grid-cols-3 text-center text-beige-100">
@@ -171,13 +171,13 @@ export default function PropertyInfoContent({
             </h3>
             <div className="grid grid-cols-3 gap-3 text-center">
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">
+                <p className="font-bold text-moss-700 truncate">
                   {formatUSDTSafe(totalValue)}
                 </p>
                 <p className="text-xs text-moss-700">Property Value</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700">{Number(totalShares)}</p>
+                <p className="font-bold text-moss-700 ">{Number(totalShares)}</p>
                 <p className="text-xs text-moss-700">Total Supply</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
