@@ -23,6 +23,7 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
 
     bool public redeemable = false;
     bool public funded = false; // this variable acted as a flag when the tokenizer funded the contract for redemption
+    bool private redeemed = false;
 
     mapping(address => uint256) public lastWithdraw; // each holder's last withdraw block number
 
@@ -58,6 +59,11 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
         if(paymentStableToken.balanceOf(address(this)) <= (i_yieldRate * 30 days)){
             revert InsufficientYieldReserved();
         }
+        _;
+    }
+
+    modifier notRedeemed() {
+        require(redeemed == false, "Already redeemed");
         _;
     }
 
@@ -122,7 +128,11 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
         funded = true;
     }
 
-    function redeem() external nonReentrant onlyWhenRedeemable isFunded {
+    function redeem() external nonReentrant onlyWhenRedeemable isFunded notRedeemed {
+        redeemed = true;
+        uint256 totalBalance = paymentStableToken.balanceOf(address(this));
+        uint256 nftWorth = i_initialValue / i_totalSupply;
+        paymentStableToken.transfer(msg.sender, nftWorth * balanceOf(msg.sender));
     }
 
     function getCurrentReserved() external view returns (uint256) {
