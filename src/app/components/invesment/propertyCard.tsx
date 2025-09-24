@@ -2,6 +2,7 @@
 import { PropertyData } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 type PropertyCardProps = {
   property: PropertyData;
@@ -21,11 +22,12 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
   const mockAnnualReturn = 10.36;
 
   return (
-    <div
+    <motion.div
       className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01]"
       onClick={() => onBuy?.(property.id)}
       role="button"
       tabIndex={0}
+      layoutId={`property-${property.id}`}
     >
       {/* Image with overlay text */}
       <div className="relative">
@@ -111,6 +113,6 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
           INVEST NOW
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

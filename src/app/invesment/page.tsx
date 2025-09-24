@@ -1,13 +1,13 @@
 "use client";
-import MarketplaceHeader from "@/app/components/marketplace/header";
-import NavBar from "@/app/components/marketplace/navBar";
-import PropertyList from "@/app/components/marketplace/propertyList";
-import Paging from "@/app/components/marketplace/paging";
+import MarketplaceHeader from "@/app/components/invesment/header";
+import NavBar from "@/app/components/invesment/navBar";
+import PropertyList from "@/app/components/invesment/propertyList";
+import Paging from "@/app/components/invesment/paging";
 import { useState } from "react";
 import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoContent";
-import { AnimatePresence, motion } from "framer-motion";
-import SearchBar from "../components/marketplace/searchBar";
-import FilterSidebar from "../components/marketplace/filterSidebar";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import SearchBar from "../components/invesment/searchBar";
+import FilterSidebar from "../components/invesment/filterSidebar";
 
 export default function Marketplace() {
   const [selectedId, setSelectedId] = useState<number | string | null>(null);
@@ -22,6 +22,7 @@ export default function Marketplace() {
   };
 
   return (
+    <LayoutGroup>
     <div>
       <MarketplaceHeader />
       {/*welcome message */}
@@ -105,11 +106,8 @@ export default function Marketplace() {
           >
             <motion.div
               className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
-              initial={{ scale: 0.9, opacity: 0, filter: "blur(6px)" }}
-              animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
-              exit={{ scale: 0.92, opacity: 0, filter: "blur(6px)" }}
-              transition={{ type: "spring", stiffness: 220, damping: 20 }}
-              layout
+              layoutId={`property-${selectedId}`}
+              transition={{ type: "spring", stiffness: 220, damping: 24 }}
             >
               <button
                 onClick={closeModal}
@@ -125,5 +123,6 @@ export default function Marketplace() {
         )}
       </AnimatePresence>
     </div>
+    </LayoutGroup>
   );
 }

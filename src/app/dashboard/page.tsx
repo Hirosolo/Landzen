@@ -4,7 +4,7 @@ import { useState } from "react";
 import BalanceChart from "../components/dashBoard/BalanceChart";
 import StatsCards from "../components/dashBoard/StatsCards";
 import MyPositionSection from "../components/dashBoard/myPosition";
-import MarketplaceSearchBar from "../components/marketplace/header";
+import MarketplaceSearchBar from "../components/invesment/header";
 
 export default function Dashboard() {
   const [autoRedeem, setAutoRedeem] = useState(false);

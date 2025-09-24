@@ -6,7 +6,7 @@ export default function MarketplaceSearchBar() {
   const pathname = usePathname();
   
   const isDashboard = pathname === "/dashboard";
-  const isMarketplace = pathname === "/marketPlace";
+  const isInvesment = pathname === "/invesment";
   const isFaucet = pathname === "/faucet";
 
   return (
@@ -38,15 +38,15 @@ export default function MarketplaceSearchBar() {
 
         <button
           onClick={() => {
-            window.location.href = "/marketPlace";
+            window.location.href = "/invesment";
           }}
           className={`text-green font-semibold px-2.5 transition-all duration-200 ${
-            isMarketplace
+            isInvesment
               ? "border-b-2 border-green pb-1"
               : "hover:border-b-2 hover:border-green hover:pb-1"
           }`}
         >
-          Marketplace
+          Invesment
         </button>
 
         <button

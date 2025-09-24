@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import MarketplaceSearchBar from "./components/marketplace/header";
+import MarketplaceSearchBar from "./components/invesment/header";
 import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
 import LandingPageGuide from "./components/landingPage/guide";

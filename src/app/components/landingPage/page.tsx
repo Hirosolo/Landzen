@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import PropertyCard from "../marketplace/propertyCard";
+import PropertyCard from "../invesment/propertyCard";
 
 export default function LandingPageNavBars() {
   const tabs = ["Projects", "About", "Apartments", "How To Start", "FAQs"];
