@@ -15,7 +15,7 @@ export default function MarketplaceSearchBar() {
       <div className="flex items-center gap-4">
         <img
           src="/logo-landzen.png"
-          onClick={() => (window.location.href = "/recuiter/landingPage")}
+          onClick={() => (window.location.href = "/")}
           alt="Logo"
           className="h-12 w-13 cursor-pointer border-none"
         />

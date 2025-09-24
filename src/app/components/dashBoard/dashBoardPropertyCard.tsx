@@ -6,59 +6,93 @@ import Image from "next/image";
 type PropertyCardProps = {
   property: PropertyData;
   onBuy?: (id: number | string) => void;
+  onListForSale?: (id: number | string) => void;
+  onRedeem?: (id: number | string) => void;
+  isListed?: boolean;
+  buyPrice?: bigint | string | number;
+  statusOverride?: "Active" | "Expired";
+  selected?: boolean;
+  onToggleSelect?: (id: number | string) => void;
 };
 
 export default function DashBoardPropertyCard({
   property,
   onBuy,
+  onListForSale,
+  onRedeem,
+  isListed,
+  buyPrice,
+  statusOverride,
+  selected,
+  onToggleSelect,
 }: PropertyCardProps) {
-  // Safely convert values to BigInt for calculations
-  const totalValue = property.totalValue !== undefined && property.totalValue !== null
-    ? toBigInt(property.totalValue)
-    : BigInt(0);
-  const availableShares = property.availableShares !== undefined && property.availableShares !== null
-    ? toBigInt(property.availableShares)
-    : BigInt(0);
-  const totalShares = property.totalShares !== undefined && property.totalShares !== null
-    ? toBigInt(property.totalShares)
-    : BigInt(0);
+  const totalValue =
+    property.totalValue !== undefined && property.totalValue !== null
+      ? toBigInt(property.totalValue)
+      : BigInt(0);
+  const availableShares =
+    property.availableShares !== undefined && property.availableShares !== null
+      ? toBigInt(property.availableShares)
+      : BigInt(0);
+  const totalShares =
+    property.totalShares !== undefined && property.totalShares !== null
+      ? toBigInt(property.totalShares)
+      : BigInt(0);
 
   const availabilityPercentage =
     totalShares > 0 ? Number((availableShares * BigInt(100)) / totalShares) : 0;
 
-  // Mock annual return as requested
   const mockAnnualReturn = 10.36;
 
-  const totalValueStr = property.totalValue !== undefined && property.totalValue !== null
-    ? formatUSDTSafe(totalValue)
-    : "NaN";
-  const apyStr = property.apy !== undefined && property.apy !== null
-    ? property.apy.toFixed(2) + "%"
-    : "NaN";
-  const availableSharesStr = (property.availableShares !== undefined && property.totalShares !== undefined)
-    ? `${Number(availableShares)}/${Number(totalShares)} shares`
-    : "NaN";
+  const totalValueStr =
+    property.totalValue !== undefined && property.totalValue !== null
+      ? formatUSDTSafe(totalValue)
+      : "NaN";
+  const apyStr =
+    property.apy !== undefined && property.apy !== null
+      ? property.apy.toFixed(2) + "%"
+      : "NaN";
+  const availableSharesStr =
+    property.availableShares !== undefined && property.totalShares !== undefined
+      ? `${Number(availableShares)}/${Number(totalShares)} shares`
+      : "NaN";
+
+  const computedExpired = !property.isActive;
+  const isExpired = statusOverride
+    ? statusOverride === "Expired"
+    : computedExpired;
+  const listed = Boolean(isListed);
+  const effectiveBuyPrice =
+    buyPrice !== undefined
+      ? toBigInt(buyPrice)
+      : property.sharePrice !== undefined
+      ? toBigInt(property.sharePrice)
+      : BigInt(0);
 
   return (
     <div
-      className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01]"
-      onClick={() => onBuy?.(property.id)}
+      className={`group relative w-full max-w-sm mx-auto h-[480px] rounded-2xl overflow-hidden shadow-lg border bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01] ${selected ? "border-green-600" : "border-gray-200"}`}
       role="button"
       tabIndex={0}
     >
-      {/* Image with overlay text */}
+      {/* Image */}
       <div className="relative">
         <Image
-          className="w-full h-60 object-cover" // match PropertyCard
+          className="w-full h-60 object-cover"
           src="/image-property.png"
           alt="Property"
           width={400}
           height={240}
         />
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/30"></div>
-
-        {/* Location link */}
+        {/* Plus/select icon */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSelect?.(property.id); }}
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center font-bold text-white shadow ${selected ? "bg-green-700" : "bg-black/50 hover:bg-black/60"}`}
+          aria-label="Toggle select for listing"
+        >
+          {selected ? "✓" : "+"}
+        </button>
         <a
           href="https://maps.app.goo.gl/uHn6UMmqy2U7zu3S8"
           className="absolute bottom-3 left-3 flex items-center text-white text-sm font-medium drop-shadow"
@@ -76,9 +110,8 @@ export default function DashBoardPropertyCard({
         </a>
       </div>
 
-      {/* Card body */}
-      <div className="p-4 space-y-4"> {/* match PropertyCard */}
-        {/* Property title + type */}
+      {/* Card Body */}
+      <div className="p-4 space-y-4 pb-20">
         <div className="flex justify-between items-center">
           <h3 className="font-bold text-gray-900">Property #{property.id}</h3>
           <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
@@ -86,7 +119,6 @@ export default function DashBoardPropertyCard({
           </span>
         </div>
 
-        {/* Info row */}
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <p className="text-gray-500 text-xs">Property Value</p>
@@ -102,7 +134,6 @@ export default function DashBoardPropertyCard({
           </div>
         </div>
 
-        {/* Progress bar */}
         <div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
@@ -116,13 +147,60 @@ export default function DashBoardPropertyCard({
           </div>
         </div>
 
-        {/* Invest button */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onBuy?.(property.id); }}
-          className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
-        >
-          INVEST NOW
-        </button>
+        {/* Listed buy-now text below content */}
+        {!isExpired && listed && (
+          <div className="pt-6 px-1 flex w-full justify-between">
+            <p className="text-xl font-semibold text-moss-700">Buy Now </p>
+            <p className="text-xl font-semibold text-moss-700 self-end">
+              {formatUSDTSafe(effectiveBuyPrice)}
+            </p>
+          </div>
+        )}
+
+        {/* Expired action */}
+        {isExpired && (
+          <div className="pt-2 flex justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRedeem?.(property.id);
+              }}
+              className="px-6 py-3 bg-moss-700 hover:bg-moss-800 text-beige-100 font-semibold rounded-2xl shadow-sm"
+            >
+              Redeem
+            </button>
+          </div>
+        )}
+
+        {/* Footer */}
+         <div className="absolute left-0 right-0 bottom-0 h-14 overflow-hidden">
+          {/* Hover reveal bar */}
+          {!isExpired && (
+            <div className="absolute inset-0 z-10 bg-green-700 text-white flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+              {listed ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onBuy?.(property.id);
+                  }}
+                  className="w-full h-full font-semibold"
+                >
+                  Buy now {formatUSDTSafe(effectiveBuyPrice)}
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onListForSale?.(property.id);
+                  }}
+                  className="w-full h-full font-semibold"
+                >
+                  List for sale
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

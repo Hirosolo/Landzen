@@ -2,24 +2,27 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useGetAllProperties, usePurchaseShares } from "@/lib/hooks";
+import type { PropertyData } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
 type PropertyInfoContentProps = {
   propertyId: number | string;
+  propertyData?: PropertyData;
 };
 
 export default function PropertyInfoContent({
   propertyId,
+  propertyData,
 }: PropertyInfoContentProps) {
   const { data: properties, isLoading } = useGetAllProperties();
   const [shareAmount, setShareAmount] = useState(1);
   const { purchaseShares, isPending, isConfirming, isSuccess, error } =
     usePurchaseShares();
 
-  // Find the specific property
-  const property = properties?.find((p) => p.id === propertyId);
+  // Prefer passed-in property data from the clicked card; fallback to hook data
+  const property = propertyData ?? properties?.find((p) => p.id === propertyId);
 
-  if (isLoading || !property) {
+  if ((isLoading && !propertyData) || !property) {
     return (
       <div className=" bg-beige-100 p-6 flex items-center justify-center">
         <div className="text-center">
