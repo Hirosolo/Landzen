@@ -5,6 +5,7 @@ import Image from "next/image";
 
 type PropertyCardProps = {
   property: PropertyData;
+  propertyName: string;
   onBuy?: (id: number | string) => void;
   onListForSale?: (id: number | string) => void;
   onRedeem?: (id: number | string) => void;
@@ -17,6 +18,7 @@ type PropertyCardProps = {
 
 export default function DashBoardPropertyCard({
   property,
+  propertyName,
   onBuy,
   onListForSale,
   onRedeem,
@@ -113,7 +115,7 @@ export default function DashBoardPropertyCard({
       {/* Card Body */}
       <div className="p-4 space-y-4 pb-20">
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">Property #{property.id}</h3>
+          <h3 className="font-bold text-gray-900">{propertyName}</h3>
           <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
             {property.propertyTypeName}
           </span>

@@ -14,7 +14,7 @@ const properties = [
   {
     id: 1,
     city: "Ho Chi Minh",
-    title: "T Bone CHIP: Veteran",
+    name: "Vinhomes Grand Park",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -30,7 +30,7 @@ const properties = [
   {
     id: 2,
     city: "Ho Chi Minh",
-    title: "Gaia's Tale",
+    name: "Vinhomes Grand Park",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -79,10 +79,10 @@ export default function MyPositionSection() {
 
   // Filter + Sort
   const filteredProperties = properties
-    .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()))
+    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
-      if (sort === "name-asc") return a.title.localeCompare(b.title);
-      if (sort === "name-desc") return b.title.localeCompare(a.title);
+      if (sort === "name-asc") return a.name.localeCompare(b.name);
+      if (sort === "name-desc") return b.name.localeCompare(a.name);
       if (sort === "value-asc") return a.value - b.value;
       if (sort === "value-desc") return b.value - a.value;
       return 0;
@@ -145,6 +145,7 @@ export default function MyPositionSection() {
               >
                 <DashBoardPropertyCard
                   property={mapped}
+                  propertyName={p.name}
                   isListed={listed}
                   buyPrice={mapped.sharePrice}
                   statusOverride={statusOverride}
@@ -279,12 +280,12 @@ export default function MyPositionSection() {
                       <div className="col-span-2 flex items-center gap-3">
                         <Image
                           src={p.image}
-                          alt={p.title}
+                          alt={p.name}
                           width={40}
                           height={40}
                           className="rounded-md"
                         />
-                        <span className="font-semibold">{p.title}</span>
+                        <span className="font-semibold">{p.name}</span>
                       </div>
                       <div className="font-semibold">${p.value.toLocaleString()}</div>
                       <div>-</div>
