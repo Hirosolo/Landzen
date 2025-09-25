@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import MarketplaceSearchBar from "./components/invesment/header";
 import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
@@ -9,9 +9,34 @@ import LandingPageGuide from "./components/landingPage/guide";
 import AboutUs from "./components/landingPage/aboutUs";
 import FAQ from "./components/landingPage/FAQ";
 import LogoLoop from "./components/landingPage/LogoLoop";
+import PropertyInfoContent from "./components/propertyInfo/PropertyInfoContent";
 
 export default function LandingPage() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<number | string | null>(null);
+  const infoRef = useRef<HTMLElement | null>(null);
+
+  const handleBuy = (id: number | string) => {
+    setSelectedPropertyId(id);
+  };
+
+  const closeInfo = () => setSelectedPropertyId(null);
+
+  // Prevent background scroll when modal open and handle ESC
+  useEffect(() => {
+    if (selectedPropertyId) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") closeInfo();
+      };
+      window.addEventListener("keydown", onKey);
+      return () => {
+        document.body.style.overflow = prev;
+        window.removeEventListener("keydown", onKey);
+      };
+    }
+  }, [selectedPropertyId]);
 
   const faqs = [
     "What is the structure of the HARVEST FLOW service?",
@@ -99,7 +124,7 @@ export default function LandingPage() {
             View more
           </a>
         </div>
-        <LandingPagePropertyList />
+        <LandingPagePropertyList onBuy={handleBuy} />
       </section>
 
       {/* About Us */}
@@ -117,6 +142,31 @@ export default function LandingPage() {
       <section id="faq">
         <FAQ />
       </section>
+
+      {/* Property Info Modal */}
+      {selectedPropertyId && (
+        <div
+          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/60"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeInfo();
+          }}
+          aria-modal="true"
+          role="dialog"
+        >
+          <div className="relative w-full max-w-7xl mx-4 sm:mx-8 my-12 sm:my-0">
+            <button
+              onClick={closeInfo}
+              className="absolute -top-10 right-0 sm:-top-12 sm:-right-12 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-gray-700" />
+            </button>
+            <div className="max-h-[90vh] overflow-y-auto rounded-2xl bg-beige-100">
+              <PropertyInfoContent propertyId={selectedPropertyId} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/*Sponser */}
       <section id="sponsor" className="px-6 sm:px-12 py-12 text-center">
