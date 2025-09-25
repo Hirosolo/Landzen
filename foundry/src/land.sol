@@ -13,7 +13,7 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
     ////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////// STATES ////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
-    IERC20 public constant paymentStableToken = IERC20(0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55);
+    IERC20 public immutable paymentStableToken; // Stablecoin used for this property
     uint256 public tokenIdCounter = 1;
 
     uint256 public immutable i_initialValue; // Total property value for tokenization
@@ -84,6 +84,7 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
     event EmergencyYieldWithdrawal(uint256 amount);
 
     constructor(
+        address _paymentStableToken, // Stablecoin address for this property
         uint256 _initialValue, // Total property value
         uint256 _totalSupply, // Max tokens for fractional ownership
         uint256 _yieldRate, // Rental yield per block per token
@@ -95,6 +96,8 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
     )
     ERC721( _name, _symbol) 
     Ownable(msg.sender) {
+        require(_paymentStableToken != address(0), "Invalid stablecoin address");
+        paymentStableToken = IERC20(_paymentStableToken);
         i_initialValue = _initialValue;
         i_totalSupply = _totalSupply;
         i_yieldRate = _yieldRate;

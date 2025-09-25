@@ -21,6 +21,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
      */
     struct PropertyInfo {
         address landContract;     // Address of the deployed Land contract
+        address paymentToken;     // Stablecoin used for this property
         string propertyName;      // Name of the property
         string propertySymbol;    // Symbol for the property tokens
         uint256 totalValue;       // Total property value
@@ -37,6 +38,9 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     mapping(uint256 => PropertyInfo) public properties;
     mapping(address => bool) public isLandZenProperty; // Track our deployed contracts
     mapping(address => bool) public blacklist; // Blacklisted addresses
+    mapping(address => bool) public supportedStablecoins; // Approved stablecoins
+    
+    address[] public stablecoinList; // List of supported stablecoins for enumeration
 
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////// MODIFIERS ////////////////////////////////////
@@ -63,22 +67,33 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         _;
     }
 
+    modifier supportedStablecoin(address stablecoin) {
+        require(supportedStablecoins[stablecoin], "Stablecoin not supported");
+        _;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////// EVENTS ////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
     event PropertyTokenized(
         uint256 indexed propertyId,
         address indexed landContract,
+        address indexed paymentToken,
         string propertyName,
         uint256 totalValue,
         uint256 totalSupply
     );
     event BlacklistUpdated(address indexed addr, bool isBlacklisted);
     event PropertyStatusUpdated(uint256 indexed propertyId, bool active);
+    event StablecoinUpdated(address indexed stablecoin, bool supported);
     event EmergencyPauseAll();
     event EmergencyUnpauseAll();
 
     constructor() Ownable(msg.sender) {
+        // Add default stablecoin (existing one)
+        address defaultStablecoin = 0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55;
+        supportedStablecoins[defaultStablecoin] = true;
+        stablecoinList.push(defaultStablecoin);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -87,6 +102,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
 
     /**
      * @dev Deploy a new Land contract for property tokenization
+     * @param _paymentToken Stablecoin address to use for this property
      * @param _propertyName Name of the property (e.g., "Sunset Villa Miami")
      * @param _propertySymbol Symbol for tokens (e.g., "SVMIA")
      * @param _totalValue Total property value in stablecoin units
@@ -97,6 +113,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
      * @param _landType Property type identifier
      */
     function tokenizeProperty(
+        address _paymentToken,
         string memory _propertyName,
         string memory _propertySymbol,
         uint256 _totalValue,
@@ -105,7 +122,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 _startDate,
         uint256 _projectLength,
         uint256 _landType
-    ) external onlyOwner whenNotPaused returns (address) {
+    ) external onlyOwner supportedStablecoin(_paymentToken) whenNotPaused returns (address) {
         require(_totalValue > 0, "Property value must be greater than 0");
         require(_totalSupply > 0, "Total supply must be greater than 0");
         require(_startDate > block.number, "Start date must be in the future");
@@ -115,6 +132,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
 
         // Deploy new Land contract
         Land newProperty = new Land(
+            _paymentToken,
             _totalValue,
             _totalSupply,
             _yieldRate,
@@ -131,6 +149,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         // Store property information
         properties[landCount] = PropertyInfo({
             landContract: address(newProperty),
+            paymentToken: _paymentToken,
             propertyName: _propertyName,
             propertySymbol: _propertySymbol,
             totalValue: _totalValue,
@@ -150,6 +169,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         emit PropertyTokenized(
             landCount,
             address(newProperty),
+            _paymentToken,
             _propertyName,
             _totalValue,
             _totalSupply
@@ -161,6 +181,37 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////// ADMIN FUNCTIONS /////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @dev Add a supported stablecoin
+     */
+    function addSupportedStablecoin(address stablecoin) external onlyOwner validAddress(stablecoin) {
+        require(!supportedStablecoins[stablecoin], "Stablecoin already supported");
+        
+        supportedStablecoins[stablecoin] = true;
+        stablecoinList.push(stablecoin);
+        emit StablecoinUpdated(stablecoin, true);
+    }
+
+    /**
+     * @dev Remove a supported stablecoin
+     */
+    function removeSupportedStablecoin(address stablecoin) external onlyOwner validAddress(stablecoin) {
+        require(supportedStablecoins[stablecoin], "Stablecoin not supported");
+        
+        supportedStablecoins[stablecoin] = false;
+        
+        // Remove from list
+        for(uint256 i = 0; i < stablecoinList.length; i++) {
+            if(stablecoinList[i] == stablecoin) {
+                stablecoinList[i] = stablecoinList[stablecoinList.length - 1];
+                stablecoinList.pop();
+                break;
+            }
+        }
+        
+        emit StablecoinUpdated(stablecoin, false);
+    }
 
     /**
      * @dev Blacklist an address from participating
@@ -227,13 +278,14 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
      */
     function getPropertyBasics(uint256 propertyId) external view validPropertyId(propertyId) returns (
         address landContract,
+        address paymentToken,
         string memory propertyName,
         uint256 totalValue,
         uint256 totalSupply,
         bool active
     ) {
         PropertyInfo memory prop = properties[propertyId];
-        return (prop.landContract, prop.propertyName, prop.totalValue, prop.totalSupply, prop.active);
+        return (prop.landContract, prop.paymentToken, prop.propertyName, prop.totalValue, prop.totalSupply, prop.active);
     }
 
     /**
@@ -288,6 +340,47 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
      */
     function isLandZenContract(address contractAddr) external view returns (bool) {
         return isLandZenProperty[contractAddr];
+    }
+
+    /**
+     * @dev Check if stablecoin is supported
+     */
+    function isStablecoinSupported(address stablecoin) external view returns (bool) {
+        return supportedStablecoins[stablecoin];
+    }
+
+    /**
+     * @dev Get all supported stablecoins
+     */
+    function getSupportedStablecoins() external view returns (address[] memory) {
+        return stablecoinList;
+    }
+
+    /**
+     * @dev Get properties by stablecoin
+     */
+    function getPropertiesByStablecoin(address stablecoin) external view returns (uint256[] memory) {
+        uint256 count = 0;
+        
+        // Count properties using this stablecoin
+        for(uint256 i = 1; i <= landCount; i++) {
+            if(properties[i].paymentToken == stablecoin && properties[i].active) {
+                count++;
+            }
+        }
+        
+        // Build array
+        uint256[] memory stablecoinProperties = new uint256[](count);
+        uint256 index = 0;
+        
+        for(uint256 i = 1; i <= landCount; i++) {
+            if(properties[i].paymentToken == stablecoin && properties[i].active) {
+                stablecoinProperties[index] = i;
+                index++;
+            }
+        }
+        
+        return stablecoinProperties;
     }
 
     /**
