@@ -1,14 +1,16 @@
 "use client";
 import { useAccount } from "wagmi";
 import { useMintUSDT } from "@/lib/hooks";
-import { formatUSDT } from "@/lib/contracts";
+import { formatUSDT, LZUSDT_TOKEN } from "@/lib/contracts";
+import { useState } from "react";
 
 export default function Faucet() {
   const { address, isConnected } = useAccount();
   const { mintUSDT, isPending, isConfirming, isSuccess, error } = useMintUSDT();
+  const [isAddingToken, setIsAddingToken] = useState(false);
 
-  // Fixed amount: 250,000 USDT (with 6 decimals)
-  const MINT_AMOUNT = BigInt(250000 * 1e6);
+  // Fixed amount: 250,000 USDT (with 18 decimals for lzUSDT)
+  const MINT_AMOUNT = BigInt(250000) * BigInt(10 ** 18);
 
   const handleMintUSDT = async () => {
     if (!address) return;
@@ -20,13 +22,108 @@ export default function Faucet() {
     }
   };
 
+  const handleAddTokenToWallet = async () => {
+    if (!isConnected) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    setIsAddingToken(true);
+
+    try {
+      console.log("Checking for ethereum...");
+      if (!window.ethereum) {
+        alert("MetaMask is not installed");
+        return;
+      }
+
+      // Check current network
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      console.log("Current chain ID:", chainId);
+
+      // Base Sepolia chain ID is 0x14a34 (84532 in decimal)
+      const baseSepoliaChainId = "0x14a34";
+      if (chainId !== baseSepoliaChainId) {
+        alert(
+          `Please switch to Base Sepolia network to add this token. Current chain: ${chainId}`
+        );
+        return;
+      }
+
+      console.log("Attempting to add token with:", {
+        address: LZUSDT_TOKEN.address,
+        symbol: LZUSDT_TOKEN.symbol,
+        decimals: LZUSDT_TOKEN.decimals,
+      });
+
+      // Ensure the address is properly formatted (checksum)
+      const checksumAddress = LZUSDT_TOKEN.address
+        .toLowerCase()
+        .startsWith("0x")
+        ? LZUSDT_TOKEN.address
+        : `0x${LZUSDT_TOKEN.address}`;
+
+      const result = await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: checksumAddress,
+            symbol: LZUSDT_TOKEN.symbol,
+            decimals: LZUSDT_TOKEN.decimals,
+          },
+        },
+      });
+
+      console.log("Token addition result:", result);
+      alert("🎉 lzUSDT has been added to your wallet!");
+    } catch (error) {
+      console.error("Detailed error:", error);
+      console.error("Error type:", typeof error);
+      console.error(
+        "Error message:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+
+      // More specific error handling
+      if (error && typeof error === "object") {
+        const walletError = error as {
+          code?: number;
+          data?: unknown;
+          message?: string;
+        };
+        console.error("Error code:", walletError.code);
+        console.error("Error data:", walletError.data);
+
+        if (walletError.code === 4001) {
+          alert("You cancelled the token addition request.");
+          return;
+        } else if (walletError.code === -32602) {
+          alert("Invalid token parameters. Please check the contract address.");
+          return;
+        }
+      }
+
+      alert(
+        `Failed to add token: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsAddingToken(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">USDT Faucet</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            lzUSDT Faucet
+          </h1>
           <p className="text-gray-600">
-            Get test USDT tokens for investing in tokenized real estate
+            Get test lzUSDT (Landzen USDT) tokens for investing in tokenized
+            real estate
           </p>
         </div>
 
@@ -40,7 +137,6 @@ export default function Faucet() {
               </p>
             </div>
           </div>
-
           {/* Wallet Connection Status */}
           {isConnected ? (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
@@ -52,11 +148,10 @@ export default function Faucet() {
           ) : (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
               <p className="text-center text-yellow-700">
-                Please connect your wallet to mint USDT
+                Please connect your wallet to mint lzUSDT
               </p>
             </div>
           )}
-
           {/* Mint Button */}
           <button
             onClick={handleMintUSDT}
@@ -66,10 +161,19 @@ export default function Faucet() {
             {isPending
               ? "Confirm in Wallet..."
               : isConfirming
-              ? "Minting USDT..."
-              : "Mint 250,000 USDT"}
+              ? "Minting lzUSDT..."
+              : "Mint 250,000 lzUSDT"}
           </button>
-
+          {/* Add Token to Wallet Button */}
+          {isConnected && (
+            <button
+              onClick={handleAddTokenToWallet}
+              disabled={isAddingToken}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+            >
+              {isAddingToken ? "Adding Token..." : "Add lzUSDT to Wallet"}
+            </button>
+          )}{" "}
           {/* Status Messages */}
           {isSuccess && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl">
@@ -89,13 +193,12 @@ export default function Faucet() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm">
-                    Successfully minted {formatUSDT(MINT_AMOUNT)} USDT!
+                    Successfully minted {formatUSDT(MINT_AMOUNT)} lzUSDT!
                   </p>
                 </div>
               </div>
             </div>
           )}
-
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               <div className="flex">
@@ -114,21 +217,21 @@ export default function Faucet() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm">
-                    Error: {error.message || "Failed to mint USDT"}
+                    Error: {error.message || "Failed to mint lzUSDT"}
                   </p>
                 </div>
               </div>
             </div>
           )}
-
           {/* Info Section */}
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
             <h3 className="font-semibold text-gray-900 mb-2">How to use:</h3>
             <ul className="text-sm text-gray-600 space-y-1">
               <li>1. Connect your wallet</li>
-              <li>2. Click &quot;Mint 250,000 USDT&quot;</li>
+              <li>2. Click &quot;Mint 250,000 lzUSDT&quot;</li>
               <li>3. Confirm the transaction</li>
-              <li>4. Use USDT to invest in properties</li>
+              <li>4. Add lzUSDT to your wallet (optional)</li>
+              <li>5. Use lzUSDT to invest in properties</li>
             </ul>
           </div>
         </div>

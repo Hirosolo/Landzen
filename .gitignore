@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Smart Contracts
+# Compiler files
+foundry/cache/
+foundry/out/
+
+# Ignores development broadcast logs
+foundry/broadcast
+foundry/broadcast/*/31337/
+foundry/broadcast/**/dry-run/
