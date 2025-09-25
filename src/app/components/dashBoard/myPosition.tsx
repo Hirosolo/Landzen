@@ -14,7 +14,7 @@ const properties = [
   {
     id: 1,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
+    name: "Vinhomes Grand Park 1",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -30,7 +30,7 @@ const properties = [
   {
     id: 2,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
+    name: "Vinhomes Grand Park 2",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -46,7 +46,7 @@ const properties = [
   {
     id: 3,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
+    name: "Vinhomes Grand Park 3",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -62,7 +62,7 @@ const properties = [
   {
     id: 4,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
+    name: "Vinhomes Grand Park 4",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -265,23 +265,23 @@ export default function MyPositionSection() {
         </button>
 
         {/* Cancel Listings button */}
-        <button
-          onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
-          disabled={
-            !filteredProperties.some(
-              (p) => selectedForListing[p.id] && p.listed === "true"
-            )
-          }
-          className={`px-4 py-2 rounded-md font-semibold ${
-            !filteredProperties.some(
-              (p) => selectedForListing[p.id] && p.listed === "true"
-            )
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-red-500 text-white hover:bg-red-600"
-          }`}
-        >
-          Cancel listings
-        </button>
+<button
+  onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
+  disabled={
+    Object.entries(selectedForListing).some(
+      ([id, sel]) => sel && filteredProperties.find((p) => p.id === Number(id))?.listed === "true"
+    ) || Object.values(selectedForListing).every((v) => !v) // also disable if nothing is selected
+  }
+  className={`px-4 py-2 rounded-md font-semibold ${
+    Object.entries(selectedForListing).some(
+      ([id, sel]) => sel && filteredProperties.find((p) => p.id === Number(id))?.listed === "true"
+    ) || Object.values(selectedForListing).every((v) => !v)
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-red-500 text-white hover:bg-red-600"
+  }`}
+>
+  Cancel listings
+</button>
 
         {/* Accept Offers button (still disabled for now) */}
         <button
