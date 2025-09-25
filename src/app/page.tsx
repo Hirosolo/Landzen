@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import MarketplaceSearchBar from "./components/investment/header";
-import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
 import LandingPageGuide from "./components/landingPage/guide";
 import AboutUs from "./components/landingPage/aboutUs";
@@ -161,9 +160,6 @@ export default function LandingPage() {
           />
         </motion.div>
       </section>
-
-      {/* Navigation Tabs */}
-      <LandingPageNavBars />
 
       {/* Featured Projects */}
       <section id="projects" className="px-6 sm:px-12 py-12">

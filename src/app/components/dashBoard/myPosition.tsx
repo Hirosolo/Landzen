@@ -14,7 +14,23 @@ const properties = [
   {
     id: 1,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
+    name: "Vinhomes Grand Park 1",
+    value: 1000,
+    earnings: 1000,
+    amount: 1,
+    profit: 1000,
+    status: "Expired",
+    endDate: "01/01/2025",
+    type: "Residential Home",
+    image: "/image-property.png",
+    listed: "false",
+    floor: 0.0222,
+    traitFloor: 0.0248,
+  },
+  {
+    id: 2,
+    city: "Ho Chi Minh",
+    name: "Vinhomes Grand Park 2",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -24,13 +40,13 @@ const properties = [
     type: "Residential Home",
     image: "/image-property.png",
     listed: "true",
-    floor: 0.0222,
-    traitFloor: 0.0248,
+    floor: 0.0848,
+    traitFloor: 8.9,
   },
   {
-    id: 2,
+    id: 3,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
+    name: "Vinhomes Grand Park 3",
     value: 1000,
     earnings: 1000,
     amount: 1,
@@ -40,6 +56,22 @@ const properties = [
     type: "Residential Home",
     image: "/image-property.png",
     listed: "false",
+    floor: 0.0848,
+    traitFloor: 8.9,
+  },
+  {
+    id: 4,
+    city: "Ho Chi Minh",
+    name: "Vinhomes Grand Park 4",
+    value: 1000,
+    earnings: 1000,
+    amount: 1,
+    profit: 1000,
+    status: "Active",
+    endDate: "01/01/2025",
+    type: "Residential Home",
+    image: "/image-property.png",
+    listed: "true",
     floor: 0.0848,
     traitFloor: 8.9,
   },
@@ -133,39 +165,53 @@ export default function MyPositionSection() {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {filteredProperties.map((p) => {
-            const mapped: PropertyData = toPropertyData(p);
-            const listed = p.listed === "true";
-            const statusOverride =
-              p.status === "Expired" ? "Expired" : ("Active" as const);
-            return (
-              <motion.div
-                key={p.id}
-                layoutId={`dashboard-property-${p.id}`}
-                onClick={() => setSelectedId(p.id)}
-              >
-                <DashBoardPropertyCard
-                  property={mapped}
-                  propertyName={p.name}
-                  isListed={listed}
-                  buyPrice={mapped.sharePrice}
-                  statusOverride={statusOverride}
-                  selected={!!selectedForListing[p.id]}
-                  onToggleSelect={(id) => {
-                    setSelectedForListing((prev) => ({
-                      ...prev,
-                      [Number(id)]: !prev[Number(id)],
-                    }));
-                  }}
-                  onListForSale={() => console.log("list for sale", p.id)}
-                  onBuy={() => console.log("buy", p.id)}
-                  onRedeem={() => console.log("redeem", p.id)}
-                />
-              </motion.div>
-            );
-          })}
-        </div>
+<motion.div 
+  className="grid gap-6 md:grid-cols-3 lg:grid-cols-4"
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } }
+  }}
+>
+  {filteredProperties.map((p) => {
+    const mapped: PropertyData = toPropertyData(p);
+    const listed = p.listed === "true";
+    const statusOverride =
+      p.status === "Expired" ? "Expired" : ("Active" as const);
+    return (
+      <motion.div
+        key={p.id}
+        layoutId={`dashboard-property-${p.id}`}
+        onClick={() => setSelectedId(p.id)}
+        variants={{
+          hidden: { opacity: 0, y: 30 },
+          visible: { opacity: 1, y: 0 }
+        }}
+        transition={{ duration: 0.4 }}
+      >
+        <DashBoardPropertyCard
+          property={mapped}
+          propertyName={p.name}
+          isListed={listed}
+          buyPrice={mapped.sharePrice}
+          statusOverride={statusOverride}
+          selected={!!selectedForListing[p.id]}
+          onToggleSelect={(id) => {
+            setSelectedForListing((prev) => ({
+              ...prev,
+              [Number(id)]: !prev[Number(id)],
+            }));
+          }}
+          onListForSale={() => console.log("list for sale", p.id)}
+          onBuy={() => console.log("buy", p.id)}
+          onRedeem={() => console.log("redeem", p.id)}
+        />
+      </motion.div>
+    );
+  })}
+</motion.div>
+
       </section>
 
       {/* Property Info Modal */}
@@ -233,23 +279,23 @@ export default function MyPositionSection() {
         </button>
 
         {/* Cancel Listings button */}
-        <button
-          onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
-          disabled={
-            !filteredProperties.some(
-              (p) => selectedForListing[p.id] && p.listed === "true"
-            )
-          }
-          className={`px-4 py-2 rounded-md font-semibold ${
-            !filteredProperties.some(
-              (p) => selectedForListing[p.id] && p.listed === "true"
-            )
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-red-500 text-white hover:bg-red-600"
-          }`}
-        >
-          Cancel listings
-        </button>
+<button
+  onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
+  disabled={
+    Object.entries(selectedForListing).some(
+      ([id, sel]) => sel && filteredProperties.find((p) => p.id === Number(id))?.listed === "true"
+    ) || Object.values(selectedForListing).every((v) => !v) // also disable if nothing is selected
+  }
+  className={`px-4 py-2 rounded-md font-semibold ${
+    Object.entries(selectedForListing).some(
+      ([id, sel]) => sel && filteredProperties.find((p) => p.id === Number(id))?.listed === "true"
+    ) || Object.values(selectedForListing).every((v) => !v)
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-red-500 text-white hover:bg-red-600"
+  }`}
+>
+  Cancel listings
+</button>
 
         {/* Accept Offers button (still disabled for now) */}
         <button

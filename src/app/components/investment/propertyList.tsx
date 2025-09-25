@@ -2,9 +2,23 @@
 
 import PropertyCard from "./propertyCard";
 import { PropertyData, useGetAllProperties } from "@/lib/hooks";
+import { motion } from "framer-motion";
 
 type PropertyListProps = {
   onBuy?: (property: PropertyData) => void;
+};
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
 export default function PropertyList({ onBuy }: PropertyListProps) {
@@ -63,11 +77,18 @@ export default function PropertyList({ onBuy }: PropertyListProps) {
 
   return (
     <div className="pt-4 w-full flex justify-center">
-      <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4"
+      >
         {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} onBuy={onBuy} />
+          <motion.div key={property.id} variants={item}>
+            <PropertyCard property={property} onBuy={onBuy} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

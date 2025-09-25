@@ -1,6 +1,5 @@
 "use client";
 import MarketplaceHeader from "@/app/components/investment/header";
-import NavBar from "@/app/components/investment/navBar";
 import PropertyList from "@/app/components/investment/propertyList";
 import Paging from "@/app/components/investment/paging";
 import { useState } from "react";
@@ -8,8 +7,7 @@ import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoConte
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import SearchBar from "../components/investment/searchBar";
 import FilterSidebar from "../components/investment/filterSidebar";
-import { PropertyData, useGetAllProperties } from "@/lib/hooks";
-import { CONTRACT_ADDRESSES } from "@/lib/contracts";
+import { PropertyData } from "@/lib/hooks";
 
 export default function Marketplace() {
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(
@@ -19,7 +17,6 @@ export default function Marketplace() {
   const [isClosing, setIsClosing] = useState(false);
   const closeModal = () => {
     setIsClosing(true);
-    // Unmount after fade completes
     setTimeout(() => {
       setSelectedProperty(null);
       setIsClosing(false);
@@ -27,7 +24,6 @@ export default function Marketplace() {
   };
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
   const [walletConnected, setConnected] = useState(false);
-  const [favourited, setFavourited] = useState("all");
 
   const handleBuy = (property: PropertyData) => {
     setSelectedProperty(property);
@@ -35,46 +31,31 @@ export default function Marketplace() {
 
   return (
     <LayoutGroup>
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <MarketplaceHeader />
+
         {/*welcome message */}
         <section className="bg-[url('/image-marketplaceBackground.png')] bg-cover bg-center text-white py-30">
-          <div className="max-w-4xl mx-auto text-center px-4 rounded-2xl p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto text-center px-4 rounded-2xl p-6"
+          >
             <h1 className="text-2xl md:text-3xl font-bold">
               Blockchain Real Estate Investment
             </h1>
-
             <p className="mt-4 text-sm md:text-base font-medium">
               Invest in tokenized real estate properties directly from the
               blockchain. All data fetched live from Base Sepolia network.
             </p>
-          </div>
+          </motion.div>
         </section>
-
-        {/*navigation bar*/}
-        <NavBar />
-
-        {/*Favorite filter */}
-        <div className="w-full flex border-b border-black border-md">
-          <button
-            onClick={() => setFavourited("all")}
-            className={`ml-5 font-bold pt-4 pb-2 mb-2 py-2 w-12 ${
-              favourited === "all" ? "text-green-600 border-b-4" : "text-black"
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFavourited("favourite")}
-            className={`font-bold pt-4 pb-2 mb-2 ml-5 py-2 ${
-              favourited === "favourite"
-                ? "text-green-600 border-b-4"
-                : "text-black"
-            }`}
-          >
-            Favourite
-          </button>
-        </div>
 
         {/* search and filter */}
         <SearchBar onFilterToggle={toggleFilter} isFilterOpen={isFilterOpen} />
@@ -88,19 +69,7 @@ export default function Marketplace() {
             />
           )}
           <div className="flex-1">
-            {favourited === "favourite" && !walletConnected ? (
-              <div className="p-6 text-center text-red-600 font-semibold">
-                <div>You need to connect to wallet first</div>
-                <button
-                  onClick={() => setConnected(true)}
-                  className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded-3xl px-4 py-3 text-beige-100"
-                >
-                  Connect Wallet
-                </button>
-              </div>
-            ) : (
-              <PropertyList onBuy={handleBuy} />
-            )}
+            <PropertyList onBuy={handleBuy} />
           </div>
         </div>
 
@@ -119,12 +88,10 @@ export default function Marketplace() {
             >
               <motion.div
                 className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  opacity: { duration: 0.25 },
-                }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.25 }}
               >
                 <button
                   onClick={closeModal}
@@ -141,7 +108,7 @@ export default function Marketplace() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </LayoutGroup>
   );
 }
