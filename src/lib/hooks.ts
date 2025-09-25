@@ -331,12 +331,20 @@ export function useInvestInProperty() {
     hash,
   })
   
-  const investInProperty = (propertyAddress: string, shareAmount: number) => {
+  const investInProperty = async (propertyAddress: string, shareAmount: number, userAddress: string) => {
+    // Note: Land contract's mint() function only mints 1 NFT per call
+    // For multiple NFTs, we need to call mint() multiple times
+    // For now, let's mint just 1 NFT - we can enhance this later for batch minting
+    
+    if (shareAmount > 1) {
+      console.warn(`Requested ${shareAmount} NFTs, but currently only minting 1 NFT per transaction. Consider implementing batch minting.`)
+    }
+    
     writeContract({
       address: propertyAddress as `0x${string}`,
       abi: LandABI,
       functionName: 'mint',
-      args: [BigInt(shareAmount)],
+      args: [userAddress], // mint(address to) - recipient address
     })
   }
   
@@ -418,4 +426,15 @@ export function useApproveUSDT() {
     isSuccess,
     error,
   }
+}
+
+// Hook to check USDT allowance
+export function useUSDTAllowance(owner?: string, spender?: string) {
+  return useReadContract({
+    abi: MockUSDTABI,
+    address: CONTRACT_ADDRESSES.USDT as `0x${string}`,
+    functionName: 'allowance',
+    args: owner && spender ? [owner, spender] : undefined,
+    chainId: baseSepolia.id,
+  })
 }

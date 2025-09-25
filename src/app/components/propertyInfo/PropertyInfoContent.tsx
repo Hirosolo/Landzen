@@ -1,7 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
-import { PropertyData, usePurchaseShares } from "@/lib/hooks";
+import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
+import {
+  PropertyData,
+  usePurchaseShares,
+  useUSDTAllowance,
+  useApproveUSDT,
+} from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
 type PropertyInfoContentProps = {
@@ -12,8 +18,22 @@ export default function PropertyInfoContent({
   property,
 }: PropertyInfoContentProps) {
   const [shareAmount, setShareAmount] = useState(1);
+  const { address: userAddress, isConnected } = useAccount();
   const { investInProperty, isPending, isConfirming, isSuccess, error } =
     usePurchaseShares();
+
+  // USDT approval hooks
+  const { data: allowance, refetch: refetchAllowance } = useUSDTAllowance(
+    userAddress,
+    property.contractAddress
+  );
+  const {
+    approveUSDT,
+    isPending: isApproving,
+    isConfirming: isApprovingConfirming,
+    isSuccess: isApprovalSuccess,
+    error: approvalError,
+  } = useApproveUSDT();
 
   // Calculate values
   const totalValue = toBigInt(property.totalValue);
@@ -36,10 +56,72 @@ export default function PropertyInfoContent({
   // Calculate total cost
   const totalCost = nftPrice * BigInt(shareAmount);
 
+  // Check if approval is needed
+  const needsApproval =
+    allowance !== undefined && totalCost > (allowance as bigint);
+
+  // Debug logging
+  console.log("Approval Debug:", {
+    allowance: allowance?.toString(),
+    totalCost: totalCost.toString(),
+    sharePrice: sharePrice.toString(),
+    shareAmount,
+    totalValue: totalValue.toString(),
+    totalShares: totalShares.toString(),
+    needsApproval,
+    isApprovalSuccess,
+  });
+
+  // Refetch allowance after successful approval
+  useEffect(() => {
+    if (isApprovalSuccess) {
+      console.log("Approval successful, refetching allowance...");
+      setTimeout(() => {
+        refetchAllowance();
+      }, 1000); // Wait 1 second for blockchain confirmation
+    }
+  }, [isApprovalSuccess, refetchAllowance]);
+
+  // Handle approval
+  const handleApproval = async () => {
+    if (!isConnected || !userAddress) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    try {
+      // Approve either the exact cost needed or a large standard amount
+      const approvalAmount =
+        totalCost > BigInt(0) ? totalCost : BigInt("100000000000"); // 100k USDT fallback
+      console.log("Approving USDT spending:", {
+        spender: property.contractAddress,
+        amount: approvalAmount.toString(),
+        totalCost: totalCost.toString(),
+      });
+      approveUSDT(property.contractAddress, approvalAmount);
+    } catch (err) {
+      console.error("Approval failed:", err);
+    }
+  };
+
   // Handle purchase
   const handlePurchase = async () => {
+    if (!isConnected || !userAddress) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    if (needsApproval) {
+      alert("Please approve USDT spending first!");
+      return;
+    }
+
     try {
-      await investInProperty(property.contractAddress, shareAmount);
+      await investInProperty(
+        property.contractAddress,
+        shareAmount,
+        userAddress
+      );
     } catch (err) {
       console.error("Purchase failed:", err);
     }
@@ -126,7 +208,7 @@ export default function PropertyInfoContent({
             <h3 className="font-semibold text-xl text-moss-900">
               Financial Returns
             </h3>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-stretch space-x-2">
               <div className="flex w-full rounded-xl overflow-hidden border border-moss-700">
                 <input
                   type="number"
@@ -136,34 +218,66 @@ export default function PropertyInfoContent({
                   }
                   min={1}
                   max={Number(availableShares)}
-                  className="w-full p-3 text-lg font-semibold bg-beige-100 focus:outline-none text-moss-700"
+                  className="w-full py-3 px-3 text-lg font-semibold bg-beige-100 focus:outline-none text-moss-700"
                 />
                 <span className="flex items-center px-4 font-bold text-moss-700 bg-beige-100">
                   NFT
                 </span>
               </div>
-              <button
-                onClick={handlePurchase}
-                disabled={
-                  isPending ||
-                  isConfirming ||
-                  shareAmount > Number(availableShares)
-                }
-                className="bg-moss-700 hover:bg-moss-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-beige-100 px-6 py-3 rounded-xl font-semibold transition-colors"
-              >
-                {isPending
-                  ? "Confirm..."
-                  : isConfirming
-                  ? "Processing..."
-                  : "INVEST"}
-              </button>
+              {needsApproval ? (
+                <button
+                  onClick={handleApproval}
+                  disabled={
+                    !isConnected || isApproving || isApprovingConfirming
+                  }
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 h-12 rounded-xl font-semibold transition-colors flex items-center justify-center"
+                >
+                  {!isConnected
+                    ? "Connect Wallet"
+                    : isApproving
+                    ? "Confirm Approval..."
+                    : isApprovingConfirming
+                    ? "Processing Approval..."
+                    : "APPROVE USDT"}
+                </button>
+              ) : (
+                <button
+                  onClick={handlePurchase}
+                  disabled={
+                    !isConnected ||
+                    isPending ||
+                    isConfirming ||
+                    shareAmount > Number(availableShares) ||
+                    shareAmount < 1
+                  }
+                  className="bg-moss-700 hover:bg-moss-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-beige-100 px-6 h-12 rounded-xl font-semibold transition-colors flex items-center justify-center"
+                >
+                  {!isConnected
+                    ? "Connect Wallet"
+                    : isPending
+                    ? "Confirm..."
+                    : isConfirming
+                    ? "Processing..."
+                    : "INVEST"}
+                </button>
+              )}
             </div>
 
             {/* Show success/error messages */}
+            {isApprovalSuccess && needsApproval && (
+              <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+                USDT spending approved! You can now invest.
+              </div>
+            )}
             {isSuccess && (
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                 Successfully purchased {shareAmount} share
                 {shareAmount !== 1 ? "s" : ""}!
+              </div>
+            )}
+            {approvalError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                Approval Error: {approvalError.message}
               </div>
             )}
             {error && (
