@@ -53,7 +53,7 @@ export default function BalanceChart({
   const chartData = dataMap[tab];
 
   return (
-    <div className="bg-green rounded-2xl p-4 sm:p-6 shadow flex-1 flex flex-col">
+    <div className="bg-green rounded-2xl pl-4 sm:pl-6 shadow flex-1 flex flex-col pr-4 sm:pr-6 ">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div>

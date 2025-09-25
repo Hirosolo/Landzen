@@ -20,11 +20,11 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
   const mockAnnualReturn = 10.36;
 
   return (
-    <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white">
+    <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white pointer-events-none">
       {/* Image */}
-      <div className="relative">
+      <div className="relative select-none">
         <Image
-          className="w-full h-60 object-cover select-none pointer-events-none"
+          className="w-full h-60 object-cover pointer-events-none"
           src="/image-property.png"
           alt="Property"
           width={400}
@@ -36,7 +36,8 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
         {/* Location */}
         <a
           href="https://maps.app.goo.gl/uHn6UMmqy2U7zu3S8"
-          className="absolute bottom-3 left-3 flex items-center text-white text-sm font-medium drop-shadow"
+          className="absolute bottom-3 left-3 flex items-center text-white text-sm font-medium drop-shadow pointer-events-auto"
+          tabIndex={-1}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +93,7 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
 
         <button
           onClick={() => onBuy?.(property)}
-          className="w-full bg-green-800 hover:bg-green-700 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
+          className="w-full bg-green-800 hover:bg-green-700 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer pointer-events-auto"
         >
           INVEST NOW
         </button>

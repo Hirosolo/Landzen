@@ -14,7 +14,7 @@ export default function StatsCards({
   onAutoRedeemChange 
 }: StatsCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 h-60" >
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 h-60 " >
       <div className="bg-gray-800 rounded-xl p-6 flex flex-col items-start justify-center bg-green">
         <p className="text-2xl text-beige-100">Available to claim</p>
         <p className="text-4xl font-bold mt-2 text-beige-100">{rwaBalance}</p>

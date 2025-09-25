@@ -138,7 +138,7 @@ export default function MarketplaceSearchBar() {
                       <button
                         onClick={openChainModal}
                         type="button"
-                        className="flex items-center gap-2 bg-moss-100 hover:bg-moss-200 text-moss-800 rounded-3xl px-3 py-2 text-sm font-semibold transition-colors"
+                        className="flex items-center gap-2 bg-moss-100 hover:bg-moss-200 text-moss-800 rounded-3xl px-3 py-2 text-sm font-semibold transition-colors text-black"
                       >
                         {chain.hasIcon && (
                           <div

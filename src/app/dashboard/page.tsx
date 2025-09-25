@@ -48,9 +48,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
+    <div className="w-full overflow-x-hidden">
       <MarketplaceSearchBar />
-      <main className="h-screen w-screen bg-beige-100 text-white p-4 sm:p-6">
+      <main className="h-screen w-full bg-beige-100 text-white p-4 sm:p-6">
         <div className="w-full h-full flex flex-col gap-6">
           {/* Chart card */}
           <BalanceChart
