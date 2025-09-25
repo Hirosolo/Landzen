@@ -3,6 +3,7 @@
 import { motion, useMotionValue, animate } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useUserPortfolioStats } from "./useUserPortfolioStats";
+import { HarvestModal } from "./HarvestModal";
 
 type StatsCardsProps = {
   rwaBalance: string;
@@ -42,6 +43,9 @@ export default function StatsCards({
   // Get real portfolio stats
   const { data: portfolioStats } = useUserPortfolioStats();
 
+  // State for harvest modal
+  const [showHarvestModal, setShowHarvestModal] = useState(false);
+
   // Use real data or fallback to props
   const availableToClaim =
     portfolioStats?.availableToClaim ?? (parseFloat(rwaBalance) || 0);
@@ -70,9 +74,21 @@ export default function StatsCards({
         <p className="text-4xl font-bold mt-2 text-beige-100">
           ${availableAnimated}
         </p>
-        <label className="mt-3 flex items-center gap-2 text-sm text-green bg-beige-100 rounded-md border px-3 py-2">
-          <button>Harvest</button>
-        </label>
+        <button
+          onClick={() => setShowHarvestModal(true)}
+          disabled={availableToClaim <= 0}
+          className="mt-3 text-sm text-green bg-beige-100 rounded-md border px-3 py-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Harvest All
+        </button>
+
+        {/* Harvest Modal */}
+        {showHarvestModal && (
+          <HarvestModal
+            onClose={() => setShowHarvestModal(false)}
+            availableToClaim={availableToClaim}
+          />
+        )}
       </motion.div>
 
       {/* Monthly Earnings */}

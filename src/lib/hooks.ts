@@ -550,3 +550,31 @@ export function usePropertyYieldRate(propertyAddress: string) {
     },
   })
 }
+
+// Hook to withdraw yield from a single property
+export function useWithdrawYield(propertyAddress: string) {
+  const { writeContract, data: hash, isPending, error } = useWriteContract()
+
+  const withdrawYield = () => {
+    writeContract({
+      abi: LandABI,
+      address: propertyAddress as `0x${string}`,
+      functionName: 'withdrawYield',
+      args: [],
+      chainId: baseSepolia.id,
+    })
+  }
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  })
+
+  return {
+    withdrawYield,
+    hash,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    error,
+  }
+}
