@@ -91,7 +91,7 @@ export default function LandingPage() {
       <section id="projects" className="px-6 sm:px-12 py-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Featured projects</h2>
-          <a href="#" className="text-blue-600 text-sm font-medium">
+          <a href="/invesment" className="text-xs md:text-xl font-semibold hover:border-b-2 hover:border-green hover:pb-1 transition-all duration-200">
             View more
           </a>
         </div>
