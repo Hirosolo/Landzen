@@ -1,6 +1,6 @@
 "use client";
 
-import { PropertyData } from "@/lib/hooks";
+import { PropertyData, useGetTokenStats } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 import Image from "next/image";
 
@@ -13,9 +13,21 @@ export default function LandingPagePropertyCard({
   property,
   onBuy,
 }: PropertyCardProps) {
+  // Get real-time token statistics from Land contract
+  const { data: tokenStats } = useGetTokenStats(property.contractAddress);
+
   const totalValue = toBigInt(property.totalValue);
-  const availableShares = toBigInt(property.availableShares);
-  const totalShares = toBigInt(property.totalShares);
+
+  // Use real-time data when available
+  const statsArray = tokenStats as any[];
+  const totalShares =
+    statsArray && statsArray[2]
+      ? BigInt(statsArray[2].toString())
+      : toBigInt(property.totalShares); // maxSupply
+  const availableShares =
+    statsArray && statsArray[3]
+      ? BigInt(statsArray[3].toString())
+      : toBigInt(property.availableShares); // remainingToMint
 
   const availabilityPercentage =
     totalShares > 0 ? Number((availableShares * BigInt(100)) / totalShares) : 0;

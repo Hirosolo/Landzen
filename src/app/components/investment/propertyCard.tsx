@@ -1,5 +1,5 @@
 "use client";
-import { PropertyData } from "@/lib/hooks";
+import { PropertyData, useGetTokenStats } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -31,13 +31,30 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
     `PropertyCard for property ${property.id}: propertyTypeName = "${property.propertyTypeName}"`
   );
 
-  // Safely convert values to BigInt for calculations
+  // Get real-time token statistics from Land contract
+  const { data: tokenStats } = useGetTokenStats(property.contractAddress);
+
+  // Safely convert values to BigInt for calculations, using real-time data when available
   const totalValue = toBigInt(property.totalValue);
-  const availableShares = toBigInt(property.availableShares);
-  const totalShares = toBigInt(property.totalShares);
+  const statsArray = tokenStats as any[];
+  const totalShares =
+    statsArray && statsArray[2]
+      ? BigInt(statsArray[2].toString())
+      : toBigInt(property.totalShares); // maxSupply
+  const availableShares =
+    statsArray && statsArray[3]
+      ? BigInt(statsArray[3].toString())
+      : toBigInt(property.availableShares); // remainingToMint
 
   const availabilityPercentage =
     totalShares > 0 ? Number((availableShares * BigInt(100)) / totalShares) : 0;
+
+  console.log(`Property ${property.id} stats:`, {
+    tokenStats: statsArray,
+    totalShares: totalShares.toString(),
+    availableShares: availableShares.toString(),
+    availabilityPercentage,
+  });
 
   // Mock annual return as requested
   const mockAnnualReturn = 10.36;

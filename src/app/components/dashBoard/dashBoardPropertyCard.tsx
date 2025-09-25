@@ -73,7 +73,9 @@ export default function DashBoardPropertyCard({
 
   return (
     <div
-      className={`group relative w-full max-w-sm mx-auto h-[480px] rounded-2xl overflow-hidden shadow-lg border bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01] ${selected ? "border-5 border-green-600" : "border-gray-200"}`}
+      className={`group relative w-full max-w-sm mx-auto h-[480px] rounded-2xl overflow-hidden shadow-lg border bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01] ${
+        selected ? "border-5 border-green-600" : "border-gray-200"
+      }`}
       role="button"
       tabIndex={0}
     >
@@ -89,8 +91,13 @@ export default function DashBoardPropertyCard({
         <div className="absolute inset-0 bg-black/30"></div>
         {/* Plus/select icon */}
         <button
-          onClick={(e) => { e.stopPropagation(); onToggleSelect?.(property.id); }}
-          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center font-bold text-white shadow ${selected ? "bg-green-700" : "bg-black/50 hover:bg-black/60"}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect?.(property.id);
+          }}
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center font-bold text-white shadow ${
+            selected ? "bg-green-700" : "bg-black/50 hover:bg-black/60"
+          }`}
           aria-label="Toggle select for listing"
         >
           {selected ? "✓" : "+"}
@@ -175,7 +182,7 @@ export default function DashBoardPropertyCard({
         )}
 
         {/* Footer */}
-         <div className="absolute left-0 right-0 bottom-0 h-14 overflow-hidden">
+        <div className="absolute left-0 right-0 bottom-0 h-14 overflow-hidden">
           {/* Hover reveal bar */}
           {!isExpired && (
             <div className="absolute inset-0 z-10 bg-green-700 text-white flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">

@@ -7,6 +7,8 @@ import {
   usePurchaseShares,
   useUSDTAllowance,
   useApproveUSDT,
+  useGetPropertyInfo,
+  useGetTokenStats,
 } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
@@ -22,6 +24,14 @@ export default function PropertyInfoContent({
   const { investInProperty, isPending, isConfirming, isSuccess, error } =
     usePurchaseShares();
 
+  // Get real-time token statistics from Land contract
+  const { data: tokenStats, refetch: refetchTokenStats } = useGetTokenStats(
+    property.contractAddress
+  );
+
+  // Debug token stats
+  console.log("Token Stats:", tokenStats);
+
   // USDT approval hooks
   const { data: allowance, refetch: refetchAllowance } = useUSDTAllowance(
     userAddress,
@@ -35,10 +45,19 @@ export default function PropertyInfoContent({
     error: approvalError,
   } = useApproveUSDT();
 
-  // Calculate values
+  // Calculate values using real-time data when available
   const totalValue = toBigInt(property.totalValue);
-  const totalShares = toBigInt(property.totalShares);
-  const availableShares = toBigInt(property.availableShares);
+
+  // Parse tokenStats array: [activeTokens, totalEverMinted, maxSupply, remainingToMint, mintingOpen, tokenPrice]
+  const statsArray = tokenStats as any[];
+  const totalShares =
+    statsArray && statsArray[2]
+      ? BigInt(statsArray[2].toString())
+      : toBigInt(property.totalShares); // maxSupply
+  const availableShares =
+    statsArray && statsArray[3]
+      ? BigInt(statsArray[3].toString())
+      : toBigInt(property.availableShares); // remainingToMint
   const soldShares = totalShares - availableShares;
 
   // Project raised calculation: (totalValue / totalShares) * soldShares
@@ -61,13 +80,16 @@ export default function PropertyInfoContent({
     allowance !== undefined && totalCost > (allowance as bigint);
 
   // Debug logging
-  console.log("Approval Debug:", {
+  console.log("Property Debug:", {
+    tokenStats: statsArray,
     allowance: allowance?.toString(),
     totalCost: totalCost.toString(),
     sharePrice: sharePrice.toString(),
     shareAmount,
     totalValue: totalValue.toString(),
     totalShares: totalShares.toString(),
+    availableShares: availableShares.toString(),
+    soldShares: soldShares.toString(),
     needsApproval,
     isApprovalSuccess,
   });
@@ -81,6 +103,16 @@ export default function PropertyInfoContent({
       }, 1000); // Wait 1 second for blockchain confirmation
     }
   }, [isApprovalSuccess, refetchAllowance]);
+
+  // Refetch token stats after successful investment
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("Investment successful, refetching token stats...");
+      setTimeout(() => {
+        refetchTokenStats();
+      }, 2000); // Wait 2 seconds for blockchain confirmation
+    }
+  }, [isSuccess, refetchTokenStats]);
 
   // Handle approval
   const handleApproval = async () => {

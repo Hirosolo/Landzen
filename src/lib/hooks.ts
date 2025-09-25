@@ -438,3 +438,17 @@ export function useUSDTAllowance(owner?: string, spender?: string) {
     chainId: baseSepolia.id,
   })
 }
+
+// Hook to get token statistics from Land contract
+export function useGetTokenStats(landContractAddress?: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: landContractAddress as `0x${string}`,
+    functionName: 'getTokenStats',
+    args: [],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!landContractAddress,
+    },
+  })
+}
