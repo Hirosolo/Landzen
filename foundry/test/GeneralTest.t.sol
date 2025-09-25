@@ -20,7 +20,6 @@ contract GeneralTest is Test {
     uint256 constant TOTAL_SUPPLY = 1000; // 1000 NFTs
     uint256 constant TOKEN_PRICE = TOTAL_VALUE / TOTAL_SUPPLY; // 1000 USDT per NFT
     uint256 constant YIELD_RATE = 1e15; // Yield per block per token
-    uint256 constant PROJECT_LENGTH = 365 * 24 * 3600; // 1 year in seconds
     
     function setUp() public {
         // Set owner
@@ -44,7 +43,6 @@ contract GeneralTest is Test {
             TOTAL_SUPPLY,
             YIELD_RATE,
             block.timestamp + 3600, // Starts in 1 hour
-            PROJECT_LENGTH,
             1 // Land type
         );
         
