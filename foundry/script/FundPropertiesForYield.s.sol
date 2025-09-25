@@ -11,7 +11,7 @@ interface ILand {
 }
 
 contract FundPropertiesForYield is Script {
-    address constant USDT_ADDRESS = 0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55; // Mock USDT address
+    address constant USDT_ADDRESS = 0xc6ed2ebaf52Ba37f128230f6DF5427097B15f009;
     
     // All deployed property addresses
     address[] public propertyAddresses = [
