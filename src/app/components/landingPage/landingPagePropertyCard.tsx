@@ -6,7 +6,7 @@ import Image from "next/image";
 
 type PropertyCardProps = {
   property: PropertyData;
-  onBuy?: (id: number | string) => void;
+  onBuy?: (property: PropertyData) => void;
 };
 
 export default function LandingPagePropertyCard({ property, onBuy }: PropertyCardProps) {
@@ -91,7 +91,7 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
         </div>
 
         <button
-          onClick={() => onBuy?.(property.id)}
+          onClick={() => onBuy?.(property)}
           className="w-full bg-green-800 hover:bg-green-700 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW

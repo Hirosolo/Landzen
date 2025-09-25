@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { X } from "lucide-react";
 import MarketplaceSearchBar from "./components/invesment/header";
 import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
@@ -10,21 +10,22 @@ import AboutUs from "./components/landingPage/aboutUs";
 import FAQ from "./components/landingPage/FAQ";
 import LogoLoop from "./components/landingPage/LogoLoop";
 import PropertyInfoContent from "./components/propertyInfo/PropertyInfoContent";
+import { PropertyData } from "@/lib/hooks";
 
 export default function LandingPage() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<number | string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null);
   const infoRef = useRef<HTMLElement | null>(null);
 
-  const handleBuy = (id: number | string) => {
-    setSelectedPropertyId(id);
+  const handleBuy = (property: PropertyData) => {
+    setSelectedProperty(property);
   };
 
-  const closeInfo = () => setSelectedPropertyId(null);
+  const closeInfo = () => setSelectedProperty(null);
 
   // Prevent background scroll when modal open and handle ESC
   useEffect(() => {
-    if (selectedPropertyId) {
+    if (selectedProperty) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       const onKey = (e: KeyboardEvent) => {
@@ -36,47 +37,17 @@ export default function LandingPage() {
         window.removeEventListener("keydown", onKey);
       };
     }
-  }, [selectedPropertyId]);
+  }, [selectedProperty]);
 
-  const faqs = [
-    "What is the structure of the HARVEST FLOW service?",
-    "How is HARVEST FLOW different from other lending services?",
-    "Can I use HARVEST FLOW if I don’t own any crypto assets?",
-    "Can I cancel the lending contract before the end of the term?",
-    "How is the lending fee calculated?",
-  ];
   const imageLogos = [
-    {
-      src: "/logo-Vikki.svg",
-      alt: "Vikki",
-      href: "https://company1.com",
-    },
-    {
-      src: "/logo-Vietjet.svg",
-      alt: "Vietjet",
-      href: "https://company2.com",
-    },
-    {
-      src: "/logo-Superteam.svg",
-      alt: "Superteam",
-      href: "https://company3.com",
-    },
-    {
-      src: "/logo-SovicoGroup.svg",
-      alt: "SovicoGroup",
-      href: "https://company3.com",
-    },
-    {
-      src: "/logo-NamiFoundation.svg",
-      alt: "NamiFoundation",
-      href: "https://company3.com",
-    },
-    {
-      src: "/logo-HDBank.svg",
-      alt: "HDBank",
-      href: "https://company3.com",
-    },
+    { src: "/logo-Vikki.svg", alt: "Vikki", href: "https://company1.com" },
+    { src: "/logo-Vietjet.svg", alt: "Vietjet", href: "https://company2.com" },
+    { src: "/logo-Superteam.svg", alt: "Superteam", href: "https://company3.com" },
+    { src: "/logo-SovicoGroup.svg", alt: "SovicoGroup", href: "https://company3.com" },
+    { src: "/logo-NamiFoundation.svg", alt: "NamiFoundation", href: "https://company3.com" },
+    { src: "/logo-HDBank.svg", alt: "HDBank", href: "https://company3.com" },
   ];
+
   return (
     <main className="min-h-screen bg-beige-100 text-gray-900">
       <MarketplaceSearchBar />
@@ -130,7 +101,6 @@ export default function LandingPage() {
       {/* About Us */}
       <section id="about-us">
         <AboutUs />
-
       </section>
 
       {/* Guide */}
@@ -144,7 +114,7 @@ export default function LandingPage() {
       </section>
 
       {/* Property Info Modal */}
-      {selectedPropertyId && (
+      {selectedProperty && (
         <div
           className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/60"
           onClick={(e) => {
@@ -162,21 +132,23 @@ export default function LandingPage() {
               <X className="w-5 h-5 text-gray-700" />
             </button>
             <div className="max-h-[90vh] overflow-y-auto rounded-2xl bg-beige-100">
-              <PropertyInfoContent propertyId={selectedPropertyId} />
+              <PropertyInfoContent property={selectedProperty} />
             </div>
           </div>
         </div>
       )}
 
-      {/*Sponser */}
+      {/* Sponsor */}
       <section id="sponsor" className="px-6 sm:px-12 py-12 text-center">
-        <h2 className="text-3xl font-semibold mb-10 text-green font-bold">Sponsored By</h2>
+        <h2 className="text-3xl font-semibold mb-10 text-green font-bold">
+          Sponsored By
+        </h2>
         <LogoLoop
           logos={imageLogos}
           speed={120}
           direction="left"
-          logoHeight={240} // match property card image height
-          gap={60} // spacing between logos
+          logoHeight={240}
+          gap={60}
           pauseOnHover={false}
           scaleOnHover={false}
           fadeOut={false}

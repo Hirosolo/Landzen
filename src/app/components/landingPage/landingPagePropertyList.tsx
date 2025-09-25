@@ -1,13 +1,16 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { useGetAllProperties } from "@/lib/hooks";
+import { useGetAllProperties, PropertyData } from "@/lib/hooks";
 import LandingPagePropertyCard from "./landingPagePropertyCard";
 import AnimatedGalleryItem from "../landingPage/AnimatedGalleryItems";
 
+
 type PropertyListProps = {
-  onBuy?: (id: number | string) => void;
+  onBuy?: (property: PropertyData) => void; // update type
 };
+
+
 
 export default function LandingPagePropertyList({ onBuy }: PropertyListProps) {
   const { data: properties, isLoading, error } = useGetAllProperties();

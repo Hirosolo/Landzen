@@ -1,35 +1,19 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import { useGetAllProperties, usePurchaseShares } from "@/lib/hooks";
+import { PropertyData, usePurchaseShares } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
 type PropertyInfoContentProps = {
-  propertyId: number | string;
+  property: PropertyData;
 };
 
-export default function PropertyInfoContent({
-  propertyId,
-}: PropertyInfoContentProps) {
-  const { data: properties, isLoading } = useGetAllProperties();
+export default function PropertyInfoContent({ property }: PropertyInfoContentProps) {
   const [shareAmount, setShareAmount] = useState(1);
   const { purchaseShares, isPending, isConfirming, isSuccess, error } =
     usePurchaseShares();
 
-  // Find the specific property
-  const property = properties?.find((p) => p.id === propertyId);
-
-  if (isLoading || !property) {
-    return (
-      <div className=" bg-beige-100 p-6 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-gray-600">Loading property details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Calculate values using your formula
+  // Calculate values
   const totalValue = toBigInt(property.totalValue);
   const totalShares = toBigInt(property.totalShares);
   const availableShares = toBigInt(property.availableShares);
@@ -44,10 +28,10 @@ export default function PropertyInfoContent({
   // Investment details calculations
   const nftPrice = sharePrice;
   const rentalYield = property.apy;
-  const mockAnnualReturn = 10.36; // As discussed, keep this mocked
-  const mockProjectLength = "90 days"; // Mock value
+  const mockAnnualReturn = 10.36;
+  const mockProjectLength = "90 days";
 
-  // Calculate total cost based on selected amount
+  // Calculate total cost
   const totalCost = nftPrice * BigInt(shareAmount);
 
   // Handle purchase
