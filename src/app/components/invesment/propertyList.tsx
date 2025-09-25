@@ -1,10 +1,10 @@
 "use client";
 
 import PropertyCard from "./propertyCard";
-import { useGetAllProperties } from "@/lib/hooks";
+import { PropertyData, useGetAllProperties } from "@/lib/hooks";
 
 type PropertyListProps = {
-  onBuy?: (id: number | string) => void;
+  onBuy?: (property: PropertyData) => void;
 };
 
 export default function PropertyList({ onBuy }: PropertyListProps) {

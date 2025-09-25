@@ -8,6 +8,7 @@ export default function MarketplaceSearchBar() {
   const isDashboard = pathname === "/dashboard";
   const isInvesment = pathname === "/invesment";
   const isFaucet = pathname === "/faucet";
+  const isMarketplace = pathname === "/marketplace";
 
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-beige border-none">
@@ -47,6 +48,19 @@ export default function MarketplaceSearchBar() {
           }`}
         >
           Invesment
+        </button>
+
+        <button
+          onClick={() => {
+            window.location.href = "/marketplace";
+          }}
+          className={`text-green font-semibold px-2.5 transition-all duration-200 ${
+            isMarketplace
+              ? "border-b-2 border-green pb-1"
+              : "hover:border-b-2 hover:border-green hover:pb-1"
+          }`}
+        >
+          Marketplace
         </button>
 
         <button

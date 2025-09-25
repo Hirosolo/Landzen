@@ -8,16 +8,19 @@ import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoConte
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import SearchBar from "../components/invesment/searchBar";
 import FilterSidebar from "../components/invesment/filterSidebar";
+import { PropertyData, useGetAllProperties } from "@/lib/hooks";
 
 export default function Marketplace() {
-  const [selectedId, setSelectedId] = useState<number | string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(
+    null
+  );
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const closeModal = () => {
     setIsClosing(true);
     // Unmount after fade completes
     setTimeout(() => {
-      setSelectedId(null);
+      setSelectedProperty(null);
       setIsClosing(false);
     }, 250);
   };
@@ -25,8 +28,8 @@ export default function Marketplace() {
   const [walletConnected, setConnected] = useState(false);
   const [favourited, setFavourited] = useState("all");
 
-  const handleBuy = (id: number | string) => {
-    setSelectedId(id);
+  const handleBuy = (property: PropertyData) => {
+    setSelectedProperty(property);
   };
 
   return (
@@ -104,40 +107,39 @@ export default function Marketplace() {
         <Paging />
 
         {/* PropertyInfo modal overlay with shared layout animation */}
-         <AnimatePresence>
-   {(selectedId !== null || isClosing) && (
-    <motion.div
-      className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-    >
-        <motion.div
-        className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}   
-        transition={{
-          opacity: { duration: 0.25 }
-        }}
-      >
-        <button
-          onClick={closeModal}
-          className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-        >
-          ×
-        </button>
-         <div className="p-4">
-           {selectedId !== null && (
-             <PropertyInfoContent propertyId={selectedId} />
-           )}
-         </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
-
+        <AnimatePresence>
+          {(selectedProperty !== null || isClosing) && (
+            <motion.div
+              className="fixed inset-0 bg-gray-500/30 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <motion.div
+                className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  opacity: { duration: 0.25 },
+                }}
+              >
+                <button
+                  onClick={closeModal}
+                  className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+                <div className="p-4">
+                  {selectedProperty !== null && (
+                    <PropertyInfoContent property={selectedProperty} />
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </LayoutGroup>
   );
