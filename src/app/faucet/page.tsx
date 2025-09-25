@@ -1,7 +1,7 @@
 "use client";
 import { useAccount } from "wagmi";
 import { useMintUSDT } from "@/lib/hooks";
-import { formatUSDT, LZUSDT_TOKEN } from "@/lib/contracts";
+import { formatUSDT, USDT_TOKEN } from "@/lib/contracts";
 import { useState } from "react";
 
 export default function Faucet() {
@@ -51,17 +51,15 @@ export default function Faucet() {
       }
 
       console.log("Attempting to add token with:", {
-        address: LZUSDT_TOKEN.address,
-        symbol: LZUSDT_TOKEN.symbol,
-        decimals: LZUSDT_TOKEN.decimals,
+        address: USDT_TOKEN.address,
+        symbol: USDT_TOKEN.symbol,
+        decimals: USDT_TOKEN.decimals,
       });
 
       // Ensure the address is properly formatted (checksum)
-      const checksumAddress = LZUSDT_TOKEN.address
-        .toLowerCase()
-        .startsWith("0x")
-        ? LZUSDT_TOKEN.address
-        : `0x${LZUSDT_TOKEN.address}`;
+      const checksumAddress = USDT_TOKEN.address.toLowerCase().startsWith("0x")
+        ? USDT_TOKEN.address
+        : `0x${USDT_TOKEN.address}`;
 
       const result = await window.ethereum.request({
         method: "wallet_watchAsset",
@@ -69,14 +67,14 @@ export default function Faucet() {
           type: "ERC20",
           options: {
             address: checksumAddress,
-            symbol: LZUSDT_TOKEN.symbol,
-            decimals: LZUSDT_TOKEN.decimals,
+            symbol: USDT_TOKEN.symbol,
+            decimals: USDT_TOKEN.decimals,
           },
         },
       });
 
       console.log("Token addition result:", result);
-      alert("🎉 lzUSDT has been added to your wallet!");
+      alert("🎉 Mock USDT has been added to your wallet!");
     } catch (error) {
       console.error("Detailed error:", error);
       console.error("Error type:", typeof error);
@@ -119,11 +117,10 @@ export default function Faucet() {
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            lzUSDT Faucet
+            Mock USDT Faucet
           </h1>
           <p className="text-gray-600">
-            Get test lzUSDT (Landzen USDT) tokens for investing in tokenized
-            real estate
+            Get test Mock USDT tokens for investing in tokenized real estate
           </p>
         </div>
 
@@ -148,7 +145,7 @@ export default function Faucet() {
           ) : (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
               <p className="text-center text-yellow-700">
-                Please connect your wallet to mint lzUSDT
+                Please connect your wallet to mint Mock USDT
               </p>
             </div>
           )}
@@ -161,8 +158,8 @@ export default function Faucet() {
             {isPending
               ? "Confirm in Wallet..."
               : isConfirming
-              ? "Minting lzUSDT..."
-              : "Mint 250,000 lzUSDT"}
+              ? "Minting Mock USDT..."
+              : "Mint 250,000 Mock USDT"}
           </button>
           {/* Add Token to Wallet Button */}
           {isConnected && (
@@ -171,7 +168,7 @@ export default function Faucet() {
               disabled={isAddingToken}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-colors"
             >
-              {isAddingToken ? "Adding Token..." : "Add lzUSDT to Wallet"}
+              {isAddingToken ? "Adding Token..." : "Add Mock USDT to Wallet"}
             </button>
           )}{" "}
           {/* Status Messages */}
@@ -193,7 +190,7 @@ export default function Faucet() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm">
-                    Successfully minted {formatUSDT(MINT_AMOUNT)} lzUSDT!
+                    Successfully minted {formatUSDT(MINT_AMOUNT)} Mock USDT!
                   </p>
                 </div>
               </div>
@@ -217,7 +214,7 @@ export default function Faucet() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm">
-                    Error: {error.message || "Failed to mint lzUSDT"}
+                    Error: {error.message || "Failed to mint Mock USDT"}
                   </p>
                 </div>
               </div>
@@ -228,10 +225,10 @@ export default function Faucet() {
             <h3 className="font-semibold text-gray-900 mb-2">How to use:</h3>
             <ul className="text-sm text-gray-600 space-y-1">
               <li>1. Connect your wallet</li>
-              <li>2. Click &quot;Mint 250,000 lzUSDT&quot;</li>
+              <li>2. Click &quot;Mint 250,000 Mock USDT&quot;</li>
               <li>3. Confirm the transaction</li>
-              <li>4. Add lzUSDT to your wallet (optional)</li>
-              <li>5. Use lzUSDT to invest in properties</li>
+              <li>4. Add Mock USDT to your wallet (optional)</li>
+              <li>5. Use Mock USDT to invest in properties</li>
             </ul>
           </div>
         </div>

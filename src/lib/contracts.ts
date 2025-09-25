@@ -1,25 +1,24 @@
 // Contract addresses on Base Sepolia
 export const CONTRACT_ADDRESSES = {
-  USDT: "0xe92c929a47EED2589AE0eAb2313e17AFfEF22a55", // lzUSDT contract (updated deployment)
+  USDT: "0xc6ed2ebaf52Ba37f128230f6DF5427097B15f009",
   LAND_TOKENIZER: "0x5A6C7b515328E1598d3F1B62E2404f8B525D4E86",
   DEPLOYER: "0x7EA634e331CF7b503df2e224f77a7C589462F1F2"
 } as const;
 
-// Token metadata for lzUSDT
-export const LZUSDT_TOKEN = {
+// Token metadata for Mock Stable Token
+export const USDT_TOKEN = {
   address: CONTRACT_ADDRESSES.USDT,
-  symbol: "lzUSDT",
-  name: "Landzen USDT",
+  name: "Tether USD",
+  symbol: "USDT",
   decimals: 18,
 } as const;
 
 // Property type mapping
 export const PROPERTY_TYPES = {
   1: { name: "Residential" },
-  2: { name: "Commercial" },
-  3: { name: "Industrial" },
-  4: { name: "Mixed-Use" },
-  5: { name: "Retail" }
+  2: { name: "Apartment" },
+  3: { name: "Co-living" },
+  4: { name: "Hospitality" },
 } as const;
 
 // Helper functions for USDT formatting (18 decimals for lzUSDT)
