@@ -80,6 +80,8 @@ export default function LandingPageNavBars() {
       observerRef.current.disconnect();
     }
 
+    let scrollTimeout: NodeJS.Timeout | null = null;
+
     const observer = new IntersectionObserver(
       (entries) => {
         // Find the entry closest to viewport center
@@ -97,7 +99,13 @@ export default function LandingPageNavBars() {
         }
         if (best?.target?.id) {
           const nextTab = idToTab(best.target.id);
-          if (nextTab && nextTab !== activeTab) setActiveTab(nextTab);
+          if (nextTab && nextTab !== activeTab) {
+            // Add a short delay before activating highlight
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+              setActiveTab(nextTab);
+            }, 200); // 0.2s delay
+          }
         }
       },
       {
@@ -112,28 +120,32 @@ export default function LandingPageNavBars() {
     observerRef.current = observer;
     // Fallback: lightweight scroll handler
     const onScroll = () => {
-      const centerY = window.scrollY + window.innerHeight / 2;
-      let closestId: string | null = null;
-      let closestDist = Number.POSITIVE_INFINITY;
-      for (const sec of sections) {
-        const top = sec.offsetTop;
-        const height = sec.offsetHeight;
-        const mid = top + height / 2;
-        const dist = Math.abs(mid - centerY);
-        if (dist < closestDist) {
-          closestDist = dist;
-          closestId = sec.id;
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const centerY = window.scrollY + window.innerHeight / 2;
+        let closestId: string | null = null;
+        let closestDist = Number.POSITIVE_INFINITY;
+        for (const sec of sections) {
+          const top = sec.offsetTop;
+          const height = sec.offsetHeight;
+          const mid = top + height / 2;
+          const dist = Math.abs(mid - centerY);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestId = sec.id;
+          }
         }
-      }
-      if (closestId) {
-        const nextTab = idToTab(closestId);
-        if (nextTab && nextTab !== activeTab) setActiveTab(nextTab);
-      }
+        if (closestId) {
+          const nextTab = idToTab(closestId);
+          if (nextTab && nextTab !== activeTab) setActiveTab(nextTab);
+        }
+      }, 200); // 0.2s delay
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", onScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, [tabs]);
 
