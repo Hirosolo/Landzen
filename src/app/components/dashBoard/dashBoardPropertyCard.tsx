@@ -121,12 +121,14 @@ export default function DashBoardPropertyCard({
 
       {/* Card Body */}
       <div className="p-4 space-y-4 pb-20">
-        <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">{propertyName}</h3>
-          <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
-            {property.propertyTypeName}
-          </span>
-        </div>
+        <div className="flex justify-between items-start gap-2">
+  <h3 className="font-bold text-gray-900 text-base break-words flex-1">
+    {propertyName}
+  </h3>
+  <span className="shrink-0 text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
+    {property.propertyTypeName}
+  </span>
+</div>
 
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
@@ -140,19 +142,6 @@ export default function DashBoardPropertyCard({
           <div>
             <p className="text-gray-500 text-xs">Annual Return</p>
             <p className="font-bold text-gray-900">{mockAnnualReturn}%</p>
-          </div>
-        </div>
-
-        <div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-green-500 h-2 rounded-full"
-              style={{ width: `${availabilityPercentage}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between items-center mt-1 text-xs">
-            <span className="text-green font-medium">Available</span>
-            <span className="text-gray-600">{availableSharesStr}</span>
           </div>
         </div>
 
