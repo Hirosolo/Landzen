@@ -48,13 +48,6 @@ export default function Marketplace() {
               Invest in tokenized real estate properties directly from the
               blockchain. All data fetched live from Base Sepolia network.
             </p>
-
-            <div className="mt-4 text-xs bg-white/10 backdrop-blur-sm rounded-lg p-3 inline-block">
-              <p className="font-mono">
-                Factory: {CONTRACT_ADDRESSES.LAND_TOKENIZER.slice(0, 10)}...
-                {CONTRACT_ADDRESSES.LAND_TOKENIZER.slice(-8)}
-              </p>
-            </div>
           </div>
         </section>
 
