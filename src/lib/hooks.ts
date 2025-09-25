@@ -452,3 +452,101 @@ export function useGetTokenStats(landContractAddress?: string) {
     },
   })
 }
+
+// Hook to get NFT balance for a specific property
+export function useNFTBalance(propertyAddress: string, userAddress?: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'balanceOf',
+    args: [userAddress as `0x${string}`],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress && !!userAddress,
+    },
+  })
+}
+
+// Individual property balance hook
+export function usePropertyBalance(propertyAddress: string, userAddress?: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'balanceOf',
+    args: [userAddress as `0x${string}`],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress && !!userAddress,
+    },
+  })
+}
+
+// Hook to get property name
+export function usePropertyName(propertyAddress: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'name',
+    args: [],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress,
+    },
+  })
+}
+
+// Hook to get property symbol
+export function usePropertySymbol(propertyAddress: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'symbol',
+    args: [],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress,
+    },
+  })
+}
+
+// Hook to get property type
+export function usePropertyType(propertyAddress: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'i_landType',
+    args: [],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress,
+    },
+  })
+}
+
+// Hook to get property initial value
+export function usePropertyValue(propertyAddress: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'i_initialValue',
+    args: [],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress,
+    },
+  })
+}
+
+// Hook to get yield rate
+export function usePropertyYieldRate(propertyAddress: string) {
+  return useReadContract({
+    abi: LandABI,
+    address: propertyAddress as `0x${string}`,
+    functionName: 'yieldRate',
+    args: [],
+    chainId: baseSepolia.id,
+    query: {
+      enabled: !!propertyAddress,
+    },
+  })
+}

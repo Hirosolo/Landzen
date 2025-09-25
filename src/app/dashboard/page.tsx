@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion"; // 👈 import
 import BalanceChart from "../components/dashBoard/BalanceChart";
 import StatsCards from "../components/dashBoard/StatsCards";
-import MyPositionSection from "../components/dashBoard/myPosition";
+import MyPositionSection from "../components/dashBoard/MyPositionSectionClean";
 import MarketplaceSearchBar from "../components/investment/header";
 
 export default function Dashboard() {

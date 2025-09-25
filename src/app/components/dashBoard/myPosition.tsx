@@ -5,9 +5,18 @@ import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import DashBoardPropertyInfo from "./dashBoardPropertyInfo";
 import DashBoardPropertyCard from "./dashBoardPropertyCard";
 import type { PropertyData } from "@/lib/hooks";
+import {
+  usePropertyBalance,
+  usePropertyName,
+  usePropertySymbol,
+  useGetTokenStats,
+} from "@/lib/hooks";
+import { PROPERTY_ADDRESSES } from "@/lib/contracts";
 import { FiSearch } from "react-icons/fi";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useAccount } from "wagmi";
+import RealPropertyItem from "./RealPropertyItem";
 
 // Mock data
 const properties = [
@@ -105,22 +114,33 @@ function toPropertyData(p: (typeof properties)[number]): PropertyData {
 export default function MyPositionSection() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("name-asc");
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showListingDrawer, setShowListingDrawer] = useState(false);
   const [selectedForListing, setSelectedForListing] = useState<
-    Record<number, boolean>
+    Record<string, boolean>
   >({});
 
-  // Filter + Sort
-  const filteredProperties = properties
-    .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => {
-      if (sort === "name-asc") return a.name.localeCompare(b.name);
-      if (sort === "name-desc") return b.name.localeCompare(a.name);
-      if (sort === "value-asc") return a.value - b.value;
-      if (sort === "value-desc") return b.value - a.value;
-      return 0;
-    });
+  // Get connected wallet address
+  const { address: userAddress } = useAccount();
+
+  // If wallet not connected, show connect message
+  if (!userAddress) {
+    return (
+      <section className="bg-green p-6 md:p-8 min-h-screen">
+        <h1 className="text-white text-2xl md:text-[28px] font-extrabold tracking-wide mb-6">
+          MY POSITION
+        </h1>
+        <div className="bg-white rounded-[12px] p-8 text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Connect Your Wallet
+          </h2>
+          <p className="text-gray-500">
+            Connect your wallet to view your NFT portfolio
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <LayoutGroup>
@@ -165,53 +185,31 @@ export default function MyPositionSection() {
         </div>
 
         {/* Cards Grid */}
-<motion.div 
-  className="grid gap-6 md:grid-cols-3 lg:grid-cols-4"
-  initial="hidden"
-  animate="visible"
-  variants={{
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.15 } }
-  }}
->
-  {filteredProperties.map((p) => {
-    const mapped: PropertyData = toPropertyData(p);
-    const listed = p.listed === "true";
-    const statusOverride =
-      p.status === "Expired" ? "Expired" : ("Active" as const);
-    return (
-      <motion.div
-        key={p.id}
-        layoutId={`dashboard-property-${p.id}`}
-        onClick={() => setSelectedId(p.id)}
-        variants={{
-          hidden: { opacity: 0, y: 30 },
-          visible: { opacity: 1, y: 0 }
-        }}
-        transition={{ duration: 0.4 }}
-      >
-        <DashBoardPropertyCard
-          property={mapped}
-          propertyName={p.name}
-          isListed={listed}
-          buyPrice={mapped.sharePrice}
-          statusOverride={statusOverride}
-          selected={!!selectedForListing[p.id]}
-          onToggleSelect={(id) => {
-            setSelectedForListing((prev) => ({
-              ...prev,
-              [Number(id)]: !prev[Number(id)],
-            }));
+        <motion.div
+          className="grid gap-6 md:grid-cols-3 lg:grid-cols-4"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.15 } },
           }}
-          onListForSale={() => console.log("list for sale", p.id)}
-          onBuy={() => console.log("buy", p.id)}
-          onRedeem={() => console.log("redeem", p.id)}
-        />
-      </motion.div>
-    );
-  })}
-</motion.div>
-
+        >
+          {PROPERTY_ADDRESSES.map((propertyAddress) => (
+            <RealPropertyItem
+              key={propertyAddress}
+              propertyAddress={propertyAddress}
+              userAddress={userAddress}
+              selectedForListing={selectedForListing}
+              onToggleSelect={(address) => {
+                setSelectedForListing((prev) => ({
+                  ...prev,
+                  [address]: !prev[address],
+                }));
+              }}
+              onSelect={(address) => setSelectedId(address)}
+            />
+          ))}
+        </motion.div>
       </section>
 
       {/* Property Info Modal */}
@@ -236,9 +234,7 @@ export default function MyPositionSection() {
               </button>
               <div className="p-4">
                 {(() => {
-                  const source = filteredProperties.find(
-                    (p) => p.id === selectedId
-                  );
+                  // TODO: Implement property detail lookup for selectedId
                   const mapped = source ? toPropertyData(source) : undefined;
                   return (
                     <DashBoardPropertyInfo
@@ -279,23 +275,29 @@ export default function MyPositionSection() {
         </button>
 
         {/* Cancel Listings button */}
-<button
-  onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
-  disabled={
-    Object.entries(selectedForListing).some(
-      ([id, sel]) => sel && filteredProperties.find((p) => p.id === Number(id))?.listed === "true"
-    ) || Object.values(selectedForListing).every((v) => !v) // also disable if nothing is selected
-  }
-  className={`px-4 py-2 rounded-md font-semibold ${
-    Object.entries(selectedForListing).some(
-      ([id, sel]) => sel && filteredProperties.find((p) => p.id === Number(id))?.listed === "true"
-    ) || Object.values(selectedForListing).every((v) => !v)
-      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-      : "bg-red-500 text-white hover:bg-red-600"
-  }`}
->
-  Cancel listings
-</button>
+        <button
+          onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
+          disabled={
+            Object.entries(selectedForListing).some(
+              ([id, sel]) =>
+                sel &&
+                filteredProperties.find((p) => p.id === Number(id))?.listed ===
+                  "true"
+            ) || Object.values(selectedForListing).every((v) => !v) // also disable if nothing is selected
+          }
+          className={`px-4 py-2 rounded-md font-semibold ${
+            Object.entries(selectedForListing).some(
+              ([id, sel]) =>
+                sel &&
+                filteredProperties.find((p) => p.id === Number(id))?.listed ===
+                  "true"
+            ) || Object.values(selectedForListing).every((v) => !v)
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-red-500 text-white hover:bg-red-600"
+          }`}
+        >
+          Cancel listings
+        </button>
 
         {/* Accept Offers button (still disabled for now) */}
         <button
