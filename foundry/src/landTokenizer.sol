@@ -11,6 +11,17 @@ import "./land.sol";
 contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
 
     ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////// ERRORS /////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    error InvalidPropertyValue();
+    error InvalidSupply();
+    error InvalidStartDate();
+    error InvalidProjectLength();
+    error InvalidPropertyName();
+    error InvalidPropertySymbol();
+
+    ////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////// STATES ////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +123,18 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
      * @param _projectLength Investment period in blocks
      * @param _landType Property type identifier
      */
+    struct PropertyParams {
+        address paymentToken;
+        string propertyName;
+        string propertySymbol;
+        uint256 totalValue;
+        uint256 totalSupply;
+        uint256 yieldRate;
+        uint256 startDate;
+        uint256 projectLength;
+        uint256 landType;
+    }
+
     function tokenizeProperty(
         address _paymentToken,
         string memory _propertyName,
@@ -123,32 +146,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 _projectLength,
         uint256 _landType
     ) external onlyOwner supportedStablecoin(_paymentToken) whenNotPaused returns (address) {
-        require(_totalValue > 0, "Property value must be greater than 0");
-        require(_totalSupply > 0, "Total supply must be greater than 0");
-        require(_startDate > block.number, "Start date must be in the future");
-        require(_projectLength > 0, "Project length must be greater than 0");
-        require(bytes(_propertyName).length > 0, "Property name cannot be empty");
-        require(bytes(_propertySymbol).length > 0, "Property symbol cannot be empty");
-
-        // Deploy new Land contract
-        Land newProperty = new Land(
-            _paymentToken,
-            _totalValue,
-            _totalSupply,
-            _yieldRate,
-            _startDate,
-            _projectLength,
-            _landType,
-            _propertyName,
-            _propertySymbol
-        );
-
-        // Increment property counter
-        landCount++;
-        
-        // Store property information
-        properties[landCount] = PropertyInfo({
-            landContract: address(newProperty),
+        PropertyParams memory params = PropertyParams({
             paymentToken: _paymentToken,
             propertyName: _propertyName,
             propertySymbol: _propertySymbol,
@@ -157,25 +155,77 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
             yieldRate: _yieldRate,
             startDate: _startDate,
             projectLength: _projectLength,
-            landType: _landType,
+            landType: _landType
+        });
+
+        _validatePropertyParams(params);
+
+        // Deploy new Land contract
+        Land newProperty = new Land(
+            params.paymentToken,
+            params.totalValue,
+            params.totalSupply,
+            params.yieldRate,
+            params.startDate,
+            params.projectLength,
+            params.landType,
+            params.propertyName,
+            params.propertySymbol
+        );
+
+        return _registerProperty(newProperty, params);
+    }
+
+    /**
+     * @dev Internal function to validate property parameters
+     */
+    function _validatePropertyParams(PropertyParams memory params) internal view {
+        if (params.totalValue == 0) revert InvalidPropertyValue();
+        if (params.totalSupply == 0) revert InvalidSupply();
+        if (params.startDate < block.timestamp) revert InvalidStartDate();
+        if (params.projectLength == 0) revert InvalidProjectLength();
+        
+        if (bytes(params.propertyName).length == 0) revert InvalidPropertyName();
+        if (bytes(params.propertySymbol).length == 0) revert InvalidPropertySymbol();
+    }
+
+    /**
+     * @dev Internal function to register the deployed property
+     */
+    function _registerProperty(Land newProperty, PropertyParams memory params) internal returns (address) {
+        address propertyAddress = address(newProperty);
+        
+        // Increment counter and store property info
+        landCount++;
+        properties[landCount] = PropertyInfo({
+            landContract: propertyAddress,
+            paymentToken: params.paymentToken,
+            propertyName: params.propertyName,
+            propertySymbol: params.propertySymbol,
+            totalValue: params.totalValue,
+            totalSupply: params.totalSupply,
+            yieldRate: params.yieldRate,
+            startDate: params.startDate,
+            projectLength: params.projectLength,
+            landType: params.landType,
             deployer: msg.sender,
             deployedAt: block.number,
             active: true
         });
 
         // Mark as LandZen property
-        isLandZenProperty[address(newProperty)] = true;
+        isLandZenProperty[propertyAddress] = true;
 
         emit PropertyTokenized(
             landCount,
-            address(newProperty),
-            _paymentToken,
-            _propertyName,
-            _totalValue,
-            _totalSupply
+            propertyAddress,
+            params.paymentToken,
+            params.propertyName,
+            params.totalValue,
+            params.totalSupply
         );
 
-        return address(newProperty);
+        return propertyAddress;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

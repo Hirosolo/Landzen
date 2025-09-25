@@ -2,13 +2,13 @@
 pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
-import "@openzeppelin/contracts/security/Pausable.sol";
-
-contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
+contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
 
     ////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////// STATES ////////////////////////////////////
@@ -32,9 +32,7 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
     mapping(uint256 => bool) public monthlyDepositsComplete; // Track which months are funded
     uint256 public lastYieldDeposit; // Track last deposit block number
 
-    error InsufficientYieldReserved(
-        "Insufficient yield reserved for withdrawal, validator need to revoke this token and refund the holder"
-    );
+    error InsufficientYieldReserved();
 
     modifier onlyWhenRedeemable() {
         if(redeemable == false) {
@@ -134,7 +132,7 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
      * @dev This function is called by the validator third party 
      * @dev The reason for this to trigger is listed on the app
      */
-    function emergencyRedemption() onlyOwner {
+    function emergencyRedemption() external onlyOwner {
         redeemable = true;
         emit EmergencyRedemptionTriggered();
     }
@@ -152,21 +150,10 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
         
         require(paymentStableToken.balanceOf(address(this)) >= redemptionAmount, "Insufficient funds for redemption");
         
-        // Burn all user's tokens
-        uint256[] memory userTokenIds = new uint256[](userTokens);
-        uint256 index = 0;
-        
-        // Collect user's token IDs
-        for(uint256 i = 1; i < tokenIdCounter; i++) {
-            if(_exists(i) && ownerOf(i) == msg.sender) {
-                userTokenIds[index] = i;
-                index++;
-            }
-        }
-        
-        // Burn all tokens
-        for(uint256 i = 0; i < userTokens; i++) {
-            _burn(userTokenIds[i]);
+        // Burn all user's tokens (iterate backwards to avoid index shifting)
+        while(balanceOf(msg.sender) > 0) {
+            uint256 tokenId = tokenOfOwnerByIndex(msg.sender, 0);
+            _burn(tokenId);
         }
         
         paymentStableToken.transfer(msg.sender, redemptionAmount);
@@ -325,13 +312,10 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
         uint256 userBalance = balanceOf(user);
         uint256[] memory tokenIds = new uint256[](userBalance);
         
-        uint256 index = 0;
-        for(uint256 i = 1; i < tokenIdCounter; i++) {
-            if(_exists(i) && ownerOf(i) == user) {
-                tokenIds[index] = i;
-                index++;
-            }
+        for(uint256 i = 0; i < userBalance; i++) {
+            tokenIds[i] = tokenOfOwnerByIndex(user, i);
         }
+        
         return tokenIds;
     }
 
@@ -388,5 +372,42 @@ contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
     function getTotalProjectYieldLiability() external view returns (uint256) {
         uint256 totalMonths = i_projectLength / MONTH_IN_BLOCKS;
         return i_yieldRate * MONTH_IN_BLOCKS * i_totalSupply * totalMonths;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////// REQUIRED OVERRIDES ////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @dev Override required by Solidity for multiple inheritance
+     */
+    function _update(address to, uint256 tokenId, address auth)
+        internal
+        override(ERC721, ERC721Enumerable)
+        returns (address)
+    {
+        return super._update(to, tokenId, auth);
+    }
+
+    /**
+     * @dev Override required by Solidity for multiple inheritance
+     */
+    function _increaseBalance(address account, uint128 value)
+        internal
+        override(ERC721, ERC721Enumerable)
+    {
+        super._increaseBalance(account, value);
+    }
+
+    /**
+     * @dev Override required by Solidity for multiple inheritance
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
