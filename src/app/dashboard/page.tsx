@@ -6,9 +6,13 @@ import BalanceChart from "../components/dashBoard/BalanceChart";
 import StatsCards from "../components/dashBoard/StatsCards";
 import MyPositionSection from "../components/dashBoard/MyPositionSectionClean";
 import MarketplaceSearchBar from "../components/investment/header";
+import { useUserPortfolioStats } from "../components/dashBoard/useUserPortfolioStats";
 
 export default function Dashboard() {
   const [autoRedeem, setAutoRedeem] = useState(false);
+
+  // Use real portfolio stats
+  const { data: portfolioStats, isLoading } = useUserPortfolioStats();
 
   return (
     <motion.div
@@ -28,7 +32,11 @@ export default function Dashboard() {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <BalanceChart
-              balance="$1.18135"
+              balance={
+                portfolioStats?.totalBalance
+                  ? `$${portfolioStats.totalBalance.toLocaleString()}`
+                  : "$0"
+              }
               change="+0.57%"
               date={new Date().toDateString()}
             />

@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, animate } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useUserPortfolioStats } from "./useUserPortfolioStats";
 
 type StatsCardsProps = {
   rwaBalance: string;
@@ -38,57 +39,65 @@ export default function StatsCards({
   autoRedeem = false,
   onAutoRedeemChange,
 }: StatsCardsProps) {
-  // parse values from props
-  const rwa = parseFloat(rwaBalance) || 0;
-  const rental = parseFloat(rentalYield) || 0;
-  const active = parseFloat(activeProperty) || 0;
+  // Get real portfolio stats
+  const { data: portfolioStats } = useUserPortfolioStats();
+
+  // Use real data or fallback to props
+  const availableToClaim =
+    portfolioStats?.availableToClaim ?? (parseFloat(rwaBalance) || 0);
+  const totalInvestment =
+    portfolioStats?.totalInvestment ?? (parseFloat(activeProperty) || 0);
+  const monthlyEarnings =
+    portfolioStats?.monthlyEarnings ?? (parseFloat(rentalYield) || 7.165);
+  const totalBalance =
+    portfolioStats?.totalBalance ?? availableToClaim + totalInvestment;
 
   // animated numbers
-  const rwaAnimated = useCountUp(rwa, 1.5, 2);     // show 2 decimals
-  const rentalAnimated = useCountUp(rental, 1.5, 3); // more precise (3 decimals)
-  const activeAnimated = useCountUp(active, 1.5, 0); // integer only
+  const availableAnimated = useCountUp(availableToClaim, 1.5, 2);
+  const monthlyAnimated = useCountUp(monthlyEarnings, 1.5, 3);
+  const investmentAnimated = useCountUp(totalInvestment, 1.5, 0);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 h-60">
       {/* Available to claim */}
       <motion.div
-        className="bg-gray-800 rounded-xl p-6 flex flex-col items-start justify-center bg-green"
+        className="rounded-xl p-6 flex flex-col items-start justify-center bg-green"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <p className="text-2xl text-beige-100">Available to claim</p>
         <p className="text-4xl font-bold mt-2 text-beige-100">
-          {rwaAnimated}
+          ${availableAnimated}
         </p>
-        <label className="mt-3 flex items-center gap-2 text-sm text-green bg-beige-100 rounded rounded-md border px-3 py-2">
+        <label className="mt-3 flex items-center gap-2 text-sm text-green bg-beige-100 rounded-md border px-3 py-2">
           <button>Harvest</button>
         </label>
       </motion.div>
 
       {/* Monthly Earnings */}
       <motion.div
-        className="bg-gray-800 rounded-xl p-6 flex flex-col justify-center bg-green"
+        className="rounded-xl p-6 flex flex-col justify-center bg-green"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <p className="text-2xl text-beige-100">Monthly Earnings</p>
         <p className="text-4xl font-bold mt-2 text-beige-100">
-          ${rentalAnimated}
+          ${monthlyAnimated}
         </p>
       </motion.div>
 
       {/* Total Investment */}
       <motion.div
-        className="bg-gray-800 rounded-xl p-6 flex flex-col justify-center bg-green"
+        className="rounded-xl p-6 flex flex-col justify-center bg-green"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
       >
         <p className="text-2xl text-beige-100">Total Investment</p>
         <p className="text-4xl font-bold mt-2 text-beige-100">
-          ${activeAnimated}
+          ${investmentAnimated}
         </p>
       </motion.div>
     </div>
