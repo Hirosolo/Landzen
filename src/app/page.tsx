@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
-import MarketplaceSearchBar from "./components/invesment/header";
+import MarketplaceSearchBar from "./components/investment/header";
 import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
 import LandingPageGuide from "./components/landingPage/guide";
