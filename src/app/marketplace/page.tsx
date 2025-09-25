@@ -58,7 +58,6 @@ function toPropertyData(p: (typeof properties)[number]): PropertyData {
 
 export default function Marketplace() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [favourited, setFavourited] = useState("all");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedForListing, setSelectedForListing] = useState<
     Record<number, boolean>
@@ -85,28 +84,6 @@ export default function Marketplace() {
             </p>
           </div>
         </section>
-
-        {/* Favourite filter */}
-        <div className="w-full flex border-b border-black border-md">
-          <button
-            onClick={() => setFavourited("all")}
-            className={`ml-5 font-bold pt-4 pb-2 mb-2 py-2 w-12 ${
-              favourited === "all" ? "text-green-600 border-b-4" : "text-black"
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFavourited("favourite")}
-            className={`font-bold pt-4 pb-2 mb-2 ml-5 py-2 ${
-              favourited === "favourite"
-                ? "text-green-600 border-b-4"
-                : "text-black"
-            }`}
-          >
-            Favourite
-          </button>
-        </div>
 
         {/* search + filter */}
         <SearchBar onFilterToggle={toggleFilter} isFilterOpen={isFilterOpen} />

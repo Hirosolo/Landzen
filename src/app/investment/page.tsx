@@ -1,6 +1,5 @@
 "use client";
 import MarketplaceHeader from "@/app/components/investment/header";
-import NavBar from "@/app/components/investment/navBar";
 import PropertyList from "@/app/components/investment/propertyList";
 import Paging from "@/app/components/investment/paging";
 import { useState } from "react";
@@ -25,7 +24,6 @@ export default function Marketplace() {
   };
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
   const [walletConnected, setConnected] = useState(false);
-  const [favourited, setFavourited] = useState("all");
 
   const handleBuy = (property: PropertyData) => {
     setSelectedProperty(property);
@@ -59,31 +57,6 @@ export default function Marketplace() {
           </motion.div>
         </section>
 
-        {/*navigation bar*/}
-        <NavBar />
-
-        {/*Favorite filter */}
-        <div className="w-full flex border-b border-black border-md">
-          <button
-            onClick={() => setFavourited("all")}
-            className={`ml-5 font-bold pt-4 pb-2 mb-2 py-2 w-12 ${
-              favourited === "all" ? "text-green-600 border-b-4" : "text-black"
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFavourited("favourite")}
-            className={`font-bold pt-4 pb-2 mb-2 ml-5 py-2 ${
-              favourited === "favourite"
-                ? "text-green-600 border-b-4"
-                : "text-black"
-            }`}
-          >
-            Favourite
-          </button>
-        </div>
-
         {/* search and filter */}
         <SearchBar onFilterToggle={toggleFilter} isFilterOpen={isFilterOpen} />
 
@@ -96,19 +69,7 @@ export default function Marketplace() {
             />
           )}
           <div className="flex-1">
-            {favourited === "favourite" && !walletConnected ? (
-              <div className="p-6 text-center text-red-600 font-semibold">
-                <div>You need to connect to wallet first</div>
-                <button
-                  onClick={() => setConnected(true)}
-                  className="mt-10 ml-5 bg-moss-700 hover:bg-moss-800 rounded-3xl px-4 py-3 text-beige-100"
-                >
-                  Connect Wallet
-                </button>
-              </div>
-            ) : (
-              <PropertyList onBuy={handleBuy} />
-            )}
+            <PropertyList onBuy={handleBuy} />
           </div>
         </div>
 
