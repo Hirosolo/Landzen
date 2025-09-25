@@ -4,7 +4,6 @@ import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-
 type PropertyCardProps = {
   property: PropertyData;
   onBuy?: (property: PropertyData) => void;
@@ -37,7 +36,7 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
 
   // Safely convert values to BigInt for calculations, using real-time data when available
   const totalValue = toBigInt(property.totalValue);
-  const statsArray = tokenStats as any[];
+  const statsArray = tokenStats as bigint[] | undefined;
   const totalShares =
     statsArray && statsArray[2]
       ? BigInt(statsArray[2].toString())

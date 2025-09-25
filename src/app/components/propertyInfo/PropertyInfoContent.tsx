@@ -49,7 +49,7 @@ export default function PropertyInfoContent({
   const totalValue = toBigInt(property.totalValue);
 
   // Parse tokenStats array: [activeTokens, totalEverMinted, maxSupply, remainingToMint, mintingOpen, tokenPrice]
-  const statsArray = tokenStats as any[];
+  const statsArray = tokenStats as bigint[] | undefined;
   const totalShares =
     statsArray && statsArray[2]
       ? BigInt(statsArray[2].toString())

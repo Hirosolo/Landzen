@@ -41,14 +41,18 @@ export default function PropertyPortfolioItem({
     id: parseInt(propertyAddress.slice(-6), 16), // Generate ID from address
     contractAddress: propertyAddress,
     propertyOwner: "0x0000000000000000000000000000000000000000",
-    propertyName: propertyName || `Property ${propertyAddress.slice(0, 6)}...`,
-    propertySymbol: propertySymbol || "LAND",
+    propertyName:
+      (typeof propertyName === "string" ? propertyName : null) ||
+      `Property ${propertyAddress.slice(0, 6)}...`,
+    propertySymbol:
+      (typeof propertySymbol === "string" ? propertySymbol : null) || "LAND",
     totalValue: "1000000", // Mock value - would need to get from contract
-    totalShares: tokenStats?.[1]?.toString() || "1000", // maxSupply from tokenStats
-    availableShares: tokenStats?.[0]?.toString() || "500", // remainingToMint from tokenStats
-    remainingShares: tokenStats?.[0]?.toString() || "500",
+    totalShares: (tokenStats as bigint[])?.[1]?.toString() || "1000", // maxSupply from tokenStats
+    availableShares: (tokenStats as bigint[])?.[0]?.toString() || "500", // remainingToMint from tokenStats
+    remainingShares: (tokenStats as bigint[])?.[0]?.toString() || "500",
     soldShares: (
-      Number(tokenStats?.[1] || 1000) - Number(tokenStats?.[0] || 500)
+      Number((tokenStats as bigint[])?.[1] || 1000) -
+      Number((tokenStats as bigint[])?.[0] || 500)
     ).toString(),
     yieldPerBlock: "0",
     yieldReserve: "0",
@@ -58,12 +62,15 @@ export default function PropertyPortfolioItem({
     createdAt: Date.now().toString(),
     sharePrice: "1000",
     soldPercentage: tokenStats
-      ? ((Number(tokenStats[1]) - Number(tokenStats[0])) /
-          Number(tokenStats[1])) *
+      ? ((Number((tokenStats as bigint[])[1]) -
+          Number((tokenStats as bigint[])[0])) /
+          Number((tokenStats as bigint[])[1])) *
         100
       : 50,
     availabilityPercentage: tokenStats
-      ? (Number(tokenStats[0]) / Number(tokenStats[1])) * 100
+      ? (Number((tokenStats as bigint[])[0]) /
+          Number((tokenStats as bigint[])[1])) *
+        100
       : 50,
     apy: 7.2, // Mock APY
   };
@@ -86,7 +93,6 @@ export default function PropertyPortfolioItem({
         statusOverride="Active" // Default as requested
         selected={isSelected}
         onToggleSelect={() => onToggleSelect(propertyAddress)}
-        amount={Number(balance)} // NFT balance
       />
     </motion.div>
   );

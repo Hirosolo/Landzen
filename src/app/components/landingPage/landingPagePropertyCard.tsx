@@ -19,7 +19,7 @@ export default function LandingPagePropertyCard({
   const totalValue = toBigInt(property.totalValue);
 
   // Use real-time data when available
-  const statsArray = tokenStats as any[];
+  const statsArray = tokenStats as bigint[] | undefined;
   const totalShares =
     statsArray && statsArray[2]
       ? BigInt(statsArray[2].toString())

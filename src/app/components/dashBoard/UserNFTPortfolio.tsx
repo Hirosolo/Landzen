@@ -159,8 +159,8 @@ export default function UserNFTPortfolio() {
           No NFTs Found
         </h3>
         <p className="text-gray-500 mb-4">
-          You don't own any property NFTs yet. Visit the marketplace to start
-          investing.
+          You don&apos;t own any property NFTs yet. Visit the marketplace to
+          start investing.
         </p>
         <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Explore Marketplace

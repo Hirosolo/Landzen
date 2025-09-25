@@ -32,11 +32,9 @@ export default function Dashboard() {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <BalanceChart
-              balance={
-                portfolioStats?.totalBalance
-                  ? `$${portfolioStats.totalBalance.toLocaleString()}`
-                  : "$0"
-              }
+              balance={`$${
+                portfolioStats?.totalBalance?.toLocaleString() ?? "0"
+              }`}
               change="+0.57%"
               date={new Date().toDateString()}
             />

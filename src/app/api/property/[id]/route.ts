@@ -3,10 +3,11 @@ import { fetchPropertyData } from '@/lib/hooks'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const propertyId = parseInt(params.id)
+    const { id } = await params;
+    const propertyId = parseInt(id)
     
     if (isNaN(propertyId) || propertyId < 1) {
       return NextResponse.json(

@@ -5,6 +5,20 @@ import { useRealPropertyData } from "./useRealPropertyData";
 import DashBoardPropertyCard from "./dashBoardPropertyCard";
 import type { PropertyData } from "@/lib/hooks";
 
+interface RealPropertyItem {
+  id: string;
+  propertyName: string;
+  apy: number;
+  totalAmount: number;
+  contractAddress: string;
+  propertyTypeName: string;
+  fundingGoal: number;
+  totalRaised: number;
+  propertyDescription: string;
+  propertyLocation: string;
+  pricePerShare: number;
+}
+
 interface IndividualNFTCardProps {
   propertyAddress: string;
   userAddress: string;
@@ -15,31 +29,43 @@ interface IndividualNFTCardProps {
 }
 
 // Helper: convert real data to PropertyData format expected by the card
-function toPropertyData(p: any, tokenIndex: number): PropertyData {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toPropertyData(
+  p: Record<string, any>,
+  tokenIndex: number
+): PropertyData {
   // Convert to USDT wei format (18 decimals) for consistency with other components
   const toUSDTWei = (amount: number) => BigInt(Math.round(amount * 1e18));
 
   return {
-    id: p.id + tokenIndex, // Unique ID for each NFT
-    contractAddress: p.contractAddress,
-    propertyOwner: "0x0000000000000000000000000000000000000000",
-    propertyName: p.name,
-    propertySymbol: "LAND",
-    totalValue: toUSDTWei(p.value).toString(), // Real property value in wei
-    totalShares: BigInt(p.totalSupply).toString(),
-    availableShares: BigInt(p.remainingToMint).toString(),
-    remainingShares: BigInt(p.remainingToMint).toString(),
-    soldShares: BigInt(p.totalSupply - p.remainingToMint).toString(),
-    yieldPerBlock: BigInt(0).toString(),
-    yieldReserve: BigInt(0).toString(),
-    propertyType: BigInt(1).toString(),
-    propertyTypeName: p.type,
+    id: (typeof p.id === "string" ? parseInt(p.id) : p.id) + tokenIndex, // Unique ID for each NFT
+    contractAddress: p.contractAddress || "", // Use real contract address
+    propertyOwner: p.propertyOwner || "",
+    propertyName: p.name || p.propertyName || "",
+    propertySymbol: p.propertySymbol || "",
+    apy: p.apy || 0,
+    totalValue: toUSDTWei(p.value || p.totalAmount || 0).toString(), // Real property value in wei
+    totalShares: BigInt(p.totalSupply || 0).toString(),
+    availableShares: BigInt(p.remainingToMint || 0).toString(),
+    remainingShares: BigInt(p.remainingToMint || 0).toString(),
+    soldShares: BigInt(
+      (p.totalSupply || 0) - (p.remainingToMint || 0)
+    ).toString(),
+    yieldPerBlock: p.yieldPerBlock || "0",
+    yieldReserve: p.yieldReserve || "0",
+    propertyType: p.propertyType || "",
+    propertyTypeName: p.type || p.propertyTypeName || "",
     isActive: p.status !== "Expired",
-    createdAt: BigInt(Date.now()).toString(),
-    sharePrice: toUSDTWei(p.floor).toString(),
-    soldPercentage: ((p.totalSupply - p.remainingToMint) / p.totalSupply) * 100,
-    availabilityPercentage: (p.remainingToMint / p.totalSupply) * 100,
-    apy: p.apy || 7.2, // Real APY from contract calculation
+    createdAt: p.createdAt || "",
+    sharePrice: toUSDTWei(p.floor || p.pricePerShare || 0).toString(),
+    soldPercentage: p.totalSupply
+      ? (((p.totalSupply || 0) - (p.remainingToMint || 0)) /
+          (p.totalSupply || 1)) *
+        100
+      : 0,
+    availabilityPercentage: p.totalSupply
+      ? ((p.remainingToMint || 0) / (p.totalSupply || 1)) * 100
+      : 100,
   };
 }
 

@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useGetAllProperties, usePurchaseShares } from "@/lib/hooks";
+import { useAccount } from "wagmi";
 import type { PropertyData } from "@/lib/hooks";
 import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 
@@ -16,8 +17,14 @@ export default function PropertyInfoContent({
 }: PropertyInfoContentProps) {
   const { data: properties, isLoading } = useGetAllProperties();
   const [shareAmount, setShareAmount] = useState(1);
-  const { purchaseShares, isPending, isConfirming, isSuccess, error } =
-    usePurchaseShares();
+  const {
+    investInProperty: purchaseShares,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+  } = usePurchaseShares();
+  const { address } = useAccount();
 
   // Prefer passed-in property data from the clicked card; fallback to hook data
   const property = propertyData ?? properties?.find((p) => p.id === propertyId);
@@ -55,8 +62,12 @@ export default function PropertyInfoContent({
 
   // Handle purchase
   const handlePurchase = async () => {
+    if (!address) {
+      console.error("Wallet not connected");
+      return;
+    }
     try {
-      await purchaseShares(property.contractAddress, shareAmount);
+      await purchaseShares(property.contractAddress, shareAmount, address);
     } catch (err) {
       console.error("Purchase failed:", err);
     }
@@ -180,7 +191,9 @@ export default function PropertyInfoContent({
                 <p className="text-xs text-moss-700">Property Value</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">
-                <p className="font-bold text-moss-700 ">{Number(totalShares)}</p>
+                <p className="font-bold text-moss-700 ">
+                  {Number(totalShares)}
+                </p>
                 <p className="text-xs text-moss-700">Total Supply</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-3">

@@ -14,7 +14,8 @@ interface RealPropertyItemProps {
 }
 
 // Helper: convert real data to PropertyData format expected by the card
-function toPropertyData(p: any): PropertyData {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toPropertyData(p: Record<string, any>): PropertyData {
   const usdt = (amount: number) => BigInt(Math.round(amount * 1_000_000));
   return {
     id: p.id,
@@ -47,7 +48,10 @@ export default function RealPropertyItem({
   onToggleSelect,
   onSelect,
 }: RealPropertyItemProps) {
-  const propertyData = useRealPropertyData({ propertyAddress, userAddress });
+  const { data: propertyData } = useRealPropertyData({
+    propertyAddress,
+    userAddress,
+  });
 
   // Don't render if user doesn't own any NFTs for this property
   if (!propertyData) {

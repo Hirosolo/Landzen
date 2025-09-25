@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { usePropertyBalance, useGetAllProperties } from "@/lib/hooks";
+import { PROPERTY_ADDRESSES } from "@/lib/contracts";
 
 interface RealPropertyData {
   propertyAddress: string;
@@ -78,8 +79,6 @@ export function useRealPropertyData({
 
 // Hook to get all properties where user has NFTs
 export function useUserOwnedProperties(userAddress?: string) {
-  const { PROPERTY_ADDRESSES } = require("@/lib/contracts");
-
   const propertyData = PROPERTY_ADDRESSES.map((address: string) => {
     // We'll use individual hooks for each property
     return { address, userAddress };
