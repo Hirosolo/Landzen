@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
+import { motion } from "framer-motion";
 import MarketplaceSearchBar from "./components/investment/header";
 import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
@@ -52,36 +53,113 @@ export default function LandingPage() {
     <main className="w-full overflow-x-hidden bg-beige-100 text-gray-900">
       <MarketplaceSearchBar />
       {/* Hero Section */}
-      <section className="px-6 sm:px-12 py-16 flex flex-col lg:flex-row items-center justify-between gap-12 bg-darkGreen">
+      <section className="px-6 sm:px-12 py-16 flex flex-col lg:flex-row items-center justify-between gap-12 bg-darkGreen overflow-hidden">
         {/* Left content */}
-        <div className="flex-1 space-y-6">
-          <h1 className="text-5xl font-extrabold leading-tight text-beige-100">
-            FROM <br /> SMALL FUNDS <br /> TO <br /> BIG PROPERTIES
-          </h1>
-          <p className="max-w-lg text-beige-100">
+        <motion.div
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeIn" }}
+          className="flex-1 space-y-6"
+        >
+          <motion.h1 
+            className="text-5xl font-extrabold leading-tight text-beige-100"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+              className="block"
+            >
+              FROM
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.8 }}
+              className="block"
+            >
+              SMALL FUNDS
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 1.0 }}
+              className="block"
+            >
+              TO
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 1.2 }}
+              className="block"
+            >
+              BIG PROPERTIES
+            </motion.span>
+          </motion.h1>
+          <motion.p
+            className="max-w-lg text-beige-100"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.4 }}
+          >
             We make it possible for anyone to invest in premium real estate with
             small amounts of capital. Through tokenization, you can own a
             fraction of global properties, earn rental yields, and benefit from
             appreciation—all starting with just a few dollars.
-          </p>
-          <button
+          </motion.p>
+          <motion.button
             onClick={() => {
               window.location.href = "/marketPlace";
             }}
-            className="px-6 py-3 bg-beige-100 rounded-lg font-medium shadow hover:bg-beige-300 text-black font-semibold"
+            className="px-6 py-3 bg-beige-100 rounded-lg font-medium shadow hover:bg-beige-300 text-black font-semibold hover:scale-105 transition-transform"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             View projects →
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* Right illustration */}
-        <div className="flex-1 flex justify-center">
-          <img
+        <motion.div 
+          className="flex-1 flex justify-center"
+        >
+          <motion.img
             src="/image-heroSection.png"
             alt="Hero illustration"
             className="max-h-[400px]"
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ 
+              duration: 1,
+              scale: {
+                type: "spring",
+                damping: 30,
+                stiffness: 85,
+                mass: 0.5
+              },
+              opacity: {
+                duration: 1.2,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+            whileHover={{ 
+              scale: 1.02,
+              transition: { 
+                type: "spring",
+                stiffness: 300,
+                damping: 15
+              }
+            }}
+            whileTap={{ scale: 0.98 }}
           />
-        </div>
+        </motion.div>
       </section>
 
       {/* Navigation Tabs */}
