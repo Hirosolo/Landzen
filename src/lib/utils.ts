@@ -40,13 +40,14 @@ export function bigIntToNumber(value: bigint | string | number): number {
   return 0;
 }
 
-// Format USDT with BigInt support
+// Format USDT with BigInt support (18 decimals for Mock USDT)
 export function formatUSDTSafe(amount: bigint | string | number): string {
   const value = bigIntToNumber(amount);
-  const dollars = value / 1e6;
+  const dollars = value / 1e18; // 18 decimals for Mock USDT
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 2
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(dollars);
 }

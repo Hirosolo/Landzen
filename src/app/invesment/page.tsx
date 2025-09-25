@@ -9,6 +9,7 @@ import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import SearchBar from "../components/invesment/searchBar";
 import FilterSidebar from "../components/invesment/filterSidebar";
 import { PropertyData, useGetAllProperties } from "@/lib/hooks";
+import { CONTRACT_ADDRESSES } from "@/lib/contracts";
 
 export default function Marketplace() {
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(
@@ -38,15 +39,22 @@ export default function Marketplace() {
         <MarketplaceHeader />
         {/*welcome message */}
         <section className="bg-[url('/image-marketplaceBackground.png')] bg-cover bg-center text-white py-30">
-          <div className="max-w-4xl mx-auto text-center px-4  rounded-2xl p-6">
+          <div className="max-w-4xl mx-auto text-center px-4 rounded-2xl p-6">
             <h1 className="text-2xl md:text-3xl font-bold">
-              Marketplace for Tokenized Real Estate
+              Blockchain Real Estate Investment
             </h1>
 
             <p className="mt-4 text-sm md:text-base font-medium">
-              Invest in fractional ownership of premium real estate globally
-              with full transparency on blockchain
+              Invest in tokenized real estate properties directly from the
+              blockchain. All data fetched live from Base Sepolia network.
             </p>
+
+            <div className="mt-4 text-xs bg-white/10 backdrop-blur-sm rounded-lg p-3 inline-block">
+              <p className="font-mono">
+                Factory: {CONTRACT_ADDRESSES.LAND_TOKENIZER.slice(0, 10)}...
+                {CONTRACT_ADDRESSES.LAND_TOKENIZER.slice(-8)}
+              </p>
+            </div>
           </div>
         </section>
 

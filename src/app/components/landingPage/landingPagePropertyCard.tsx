@@ -9,7 +9,10 @@ type PropertyCardProps = {
   onBuy?: (property: PropertyData) => void;
 };
 
-export default function LandingPagePropertyCard({ property, onBuy }: PropertyCardProps) {
+export default function LandingPagePropertyCard({
+  property,
+  onBuy,
+}: PropertyCardProps) {
   const totalValue = toBigInt(property.totalValue);
   const availableShares = toBigInt(property.availableShares);
   const totalShares = toBigInt(property.totalShares);
@@ -55,7 +58,7 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
       {/* Body */}
       <div className="p-4 space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">Property #{property.id}</h3>
+          <h3 className="font-bold text-gray-900">{property.propertyName}</h3>
           <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
             {property.propertyTypeName}
           </span>
@@ -64,11 +67,15 @@ export default function LandingPagePropertyCard({ property, onBuy }: PropertyCar
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <p className="text-gray-500 text-xs">Property Value</p>
-            <p className="font-bold text-gray-900">{formatUSDTSafe(totalValue)}</p>
+            <p className="font-bold text-gray-900">
+              {formatUSDTSafe(totalValue)}
+            </p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Rental Yield</p>
-            <p className="font-bold text-gray-900">{property.apy.toFixed(2)}%</p>
+            <p className="font-bold text-gray-900">
+              {property.apy.toFixed(2)}%
+            </p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">Annual Return</p>

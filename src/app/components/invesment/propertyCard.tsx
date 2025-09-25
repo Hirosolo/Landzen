@@ -9,7 +9,28 @@ type PropertyCardProps = {
   onBuy?: (property: PropertyData) => void;
 };
 
+// Function to get property type styling
+const getPropertyTypeStyles = (typeName: string): string => {
+  switch (typeName.toLowerCase()) {
+    case "residential":
+      return "bg-green-100 text-green-700";
+    case "apartment":
+      return "bg-blue-100 text-blue-700";
+    case "co-living":
+      return "bg-purple-100 text-purple-700";
+    case "hospitality":
+      return "bg-orange-100 text-orange-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
+
 export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
+  // Debug: log what property type name we're actually receiving
+  console.log(
+    `PropertyCard for property ${property.id}: propertyTypeName = "${property.propertyTypeName}"`
+  );
+
   // Safely convert values to BigInt for calculations
   const totalValue = toBigInt(property.totalValue);
   const availableShares = toBigInt(property.availableShares);
@@ -63,8 +84,19 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
       <div className="p-4 space-y-4">
         {/* Property title + type */}
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">Property #{property.id}</h3>
-          <span className="text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-gray-900 text-sm truncate">
+              {property.propertyName}
+            </h3>
+            <p className="text-xs text-gray-500 truncate">
+              {property.propertySymbol}
+            </p>
+          </div>
+          <span
+            className={`text-xs font-semibold px-3 py-1 rounded-full ${getPropertyTypeStyles(
+              property.propertyTypeName
+            )}`}
+          >
             {property.propertyTypeName}
           </span>
         </div>
@@ -73,19 +105,21 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <p className="text-gray-500 text-xs">Property Value</p>
-            <p className="font-bold text-gray-900">
+            <p className="font-bold text-gray-900 text-sm">
               {formatUSDTSafe(totalValue)}
             </p>
           </div>
           <div>
-            <p className="text-gray-500 text-xs">Rental Yield</p>
-            <p className="font-bold text-gray-900">
-              {property.apy.toFixed(2)}%
+            <p className="text-gray-500 text-xs">APY</p>
+            <p className="font-bold text-green-600 text-sm">
+              {property.apy > 0 ? property.apy.toFixed(2) : "5.50"}%
             </p>
           </div>
           <div>
-            <p className="text-gray-500 text-xs">Annual Return</p>
-            <p className="font-bold text-gray-900">{mockAnnualReturn}%</p>
+            <p className="text-gray-500 text-xs">Share Price</p>
+            <p className="font-bold text-gray-900 text-sm">
+              {formatUSDTSafe(toBigInt(property.sharePrice))}
+            </p>
           </div>
         </div>
 
@@ -98,7 +132,9 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
             ></div>
           </div>
           <div className="flex justify-between items-center mt-1 text-xs">
-            <span className="text-green font-medium">Available</span>
+            <span className="text-green-600 font-medium">
+              {availabilityPercentage.toFixed(1)}% Available
+            </span>
             <span className="text-gray-600">
               {Number(availableShares)}/{Number(totalShares)} shares
             </span>
@@ -107,7 +143,10 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
 
         {/* Invest button */}
         <button
-          onClick={(e) => { e.stopPropagation(); onBuy?.(property); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onBuy?.(property);
+          }}
           className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW

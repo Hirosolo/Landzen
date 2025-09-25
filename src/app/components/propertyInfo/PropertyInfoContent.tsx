@@ -8,9 +8,11 @@ type PropertyInfoContentProps = {
   property: PropertyData;
 };
 
-export default function PropertyInfoContent({ property }: PropertyInfoContentProps) {
+export default function PropertyInfoContent({
+  property,
+}: PropertyInfoContentProps) {
   const [shareAmount, setShareAmount] = useState(1);
-  const { purchaseShares, isPending, isConfirming, isSuccess, error } =
+  const { investInProperty, isPending, isConfirming, isSuccess, error } =
     usePurchaseShares();
 
   // Calculate values
@@ -37,7 +39,7 @@ export default function PropertyInfoContent({ property }: PropertyInfoContentPro
   // Handle purchase
   const handlePurchase = async () => {
     try {
-      await purchaseShares(property.contractAddress, shareAmount);
+      await investInProperty(property.contractAddress, shareAmount);
     } catch (err) {
       console.error("Purchase failed:", err);
     }
@@ -51,7 +53,7 @@ export default function PropertyInfoContent({ property }: PropertyInfoContentPro
           <div className="relative w-full h-80 rounded-2xl overflow-hidden shadow-md">
             <Image
               src="/image-property.png"
-              alt={`Property #${property.id}`}
+              alt={`Property ${property.id}`}
               layout="fill"
               objectFit="cover"
             />
