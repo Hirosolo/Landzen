@@ -6,7 +6,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Land is ERC721, Ownable, ReentrancyGuard {
+import "@openzeppelin/contracts/security/Pausable.sol";
+
+contract Land is ERC721, Ownable, ReentrancyGuard, Pausable {
 
     ////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////// STATES ////////////////////////////////////
@@ -193,6 +195,14 @@ contract Land is ERC721, Ownable, ReentrancyGuard {
         remainingToMint = maxSupply - totalEverMinted;
         mintingOpen = block.number < i_startDate && totalEverMinted < maxSupply;
         tokenPrice = i_initialValue / i_totalSupply;
+    }
+
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     ////////////////////////////////////////////////////////////////////////////////
