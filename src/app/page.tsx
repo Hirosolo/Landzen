@@ -92,7 +92,7 @@ export default function LandingPage() {
       <LandingPageNavBars />
 
       {/* Featured Projects */}
-      <section className="px-6 sm:px-12 py-12">
+      <section id="projects" className="px-6 sm:px-12 py-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Featured projects</h2>
           <a href="#" className="text-blue-600 text-sm font-medium">
@@ -103,16 +103,23 @@ export default function LandingPage() {
       </section>
 
       {/* About Us */}
-      <AboutUs />
+      <section id="about-us">
+        <AboutUs />
+
+      </section>
 
       {/* Guide */}
-      <LandingPageGuide />
+      <section id="guide">
+        <LandingPageGuide />
+      </section>
 
       {/* FAQ */}
-      <FAQ />
+      <section id="faq">
+        <FAQ />
+      </section>
 
       {/*Sponser */}
-      <section className="px-6 sm:px-12 py-12 text-center">
+      <section id="sponsor" className="px-6 sm:px-12 py-12 text-center">
         <h2 className="text-3xl font-semibold mb-10 text-green font-bold">Sponsored By</h2>
         <LogoLoop
           logos={imageLogos}
