@@ -140,14 +140,14 @@ export default function LandingPage() {
 
       {/* Sponsor */}
       <section id="sponsor" className="px-6 sm:px-12 py-12 text-center">
-        <h2 className="text-3xl font-semibold mb-10 text-green font-bold">
+        <h2 className="text-2xl font-semibold mb-10 text-green font-bold">
           Sponsored By
         </h2>
         <LogoLoop
           logos={imageLogos}
           speed={120}
           direction="left"
-          logoHeight={240}
+          logoHeight={75}
           gap={60}
           pauseOnHover={false}
           scaleOnHover={false}
