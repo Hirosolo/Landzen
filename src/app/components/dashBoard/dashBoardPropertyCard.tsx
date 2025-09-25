@@ -66,7 +66,7 @@ export default function DashBoardPropertyCard({
 
   return (
     <div
-      className={`group relative w-full max-w-sm mx-auto h-[480px] rounded-2xl overflow-hidden shadow-lg border bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01] ${
+      className={`group relative w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01] ${
         selected ? "border-5 border-green-600" : "border-gray-200"
       }`}
       role="button"
