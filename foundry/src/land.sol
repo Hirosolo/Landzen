@@ -18,9 +18,8 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
 
     uint256 public immutable i_initialValue; // Total property value for tokenization
     uint256 public immutable i_totalSupply; // Maximum tokens
-    uint256 public immutable i_yieldRate; // Rental yield per block per token
+    uint256 public yieldRate; // Rental yield per block per token (mutable)
     uint256 public immutable i_startDate; // Project start date (minting ends, yield begins)
-    uint256 public immutable i_projectLength; // Investment period before redemption
     uint256 public immutable i_landType; // Property type identifier
 
     uint256 public constant MONTH_IN_BLOCKS = 216000; // approximately 30 days in blocks (assuming 12s block time)
@@ -35,11 +34,7 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
     error InsufficientYieldReserved();
 
     modifier onlyWhenRedeemable() {
-        if(redeemable == false) {
-            require(block.number >= i_startDate + i_projectLength, "Redemption not allowed yet");
-        } else {
-            require(redeemable == true, "Redemption not allowed yet");
-        }
+        require(redeemable == true, "Redemption not allowed yet");
         _;
     }
 
@@ -63,7 +58,7 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         // NOTE: Yield is calculated per token, but reserves are based on i_totalSupply
         uint256 userBalance = balanceOf(msg.sender);
         uint256 blocksPassed = block.number - lastWithdraw[msg.sender];
-        uint256 requiredYield = i_yieldRate * blocksPassed * userBalance;
+        uint256 requiredYield = yieldRate * blocksPassed * userBalance;
         require(paymentStableToken.balanceOf(address(this)) >= requiredYield, "Insufficient yield balance");
         _;
     }
@@ -80,6 +75,7 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
     event FundingValidated();
     event MonthlyYieldDeposited(uint256 indexed month, uint256 amount);
     event EmergencyYieldWithdrawal(uint256 amount);
+    event YieldRateUpdated(uint256 oldYieldRate, uint256 newYieldRate);
 
     constructor(
         address _paymentStableToken, // Stablecoin address for this property
@@ -87,7 +83,6 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         uint256 _totalSupply, // Max tokens for fractional ownership
         uint256 _yieldRate, // Rental yield per block per token
         uint256 _startDate, // When minting ends and yield begins
-        uint256 _projectLength, // Investment holding period
         uint256 _landType, // Property type
         string memory _name,
         string memory _symbol
@@ -98,9 +93,8 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         paymentStableToken = IERC20(_paymentStableToken);
         i_initialValue = _initialValue;
         i_totalSupply = _totalSupply;
-        i_yieldRate = _yieldRate;
+        yieldRate = _yieldRate;
         i_startDate = _startDate;
-        i_projectLength = _projectLength;
         i_landType = _landType;
     }
 
@@ -119,7 +113,7 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         require(balanceOf(msg.sender) > 0, "No tokens owned");
 
         uint256 blocksPassed = block.number - lastWithdraw[msg.sender];
-        uint256 yieldAmount = (i_yieldRate * blocksPassed * balanceOf(msg.sender));
+        uint256 yieldAmount = (yieldRate * blocksPassed * balanceOf(msg.sender));
 
         require(yieldAmount > 0, "No yield to withdraw");
 
@@ -195,6 +189,17 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         _unpause();
     }
 
+    /**
+     * @dev Update the yield rate for the property
+     * @param _newYieldRate New yield rate per block per token
+     */
+    function setYieldRate(uint256 _newYieldRate) external onlyOwner {
+        require(_newYieldRate > 0, "Yield rate must be greater than 0");
+        uint256 oldYieldRate = yieldRate;
+        yieldRate = _newYieldRate;
+        emit YieldRateUpdated(oldYieldRate, _newYieldRate);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////// MONTHLY YIELD SYSTEM ////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +230,7 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
     function calculateRequiredMonthlyYield() public view returns (uint256) {
         // Use i_totalSupply (max possible tokens) not totalSupply() (actually minted)
         // This ensures yield is distributed proportionally among all token slots
-        return i_yieldRate * MONTH_IN_BLOCKS * i_totalSupply;
+        return yieldRate * MONTH_IN_BLOCKS * i_totalSupply;
     }
 
     /**
@@ -236,16 +241,7 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         return ((block.number - i_startDate) / MONTH_IN_BLOCKS) + 1;
     }
 
-    /**
-     * @dev Get months remaining until project end
-     */
-    function getMonthsUntilProjectEnd() public view returns (uint256) {
-        uint256 projectEndBlock = i_startDate + i_projectLength;
-        if(block.number >= projectEndBlock) return 0;
-        
-        uint256 blocksRemaining = projectEndBlock - block.number;
-        return (blocksRemaining / MONTH_IN_BLOCKS) + 1;
-    }
+
 
     /**
      * @dev Check if current month is funded
@@ -291,13 +287,9 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
     }
 
     /**
-     * @dev Emergency function to withdraw unclaimed yield after project completion + grace period
+     * @dev Emergency function to withdraw unclaimed yield (owner discretion)
      */
     function emergencyWithdrawUnclaimedYield() external onlyOwner {
-        uint256 gracePeriod = 6 * MONTH_IN_BLOCKS; // 6 months grace period
-        require(block.number > i_startDate + i_projectLength + gracePeriod, 
-               "Can only withdraw unclaimed yield 6 months after project end");
-        
         uint256 contractBalance = paymentStableToken.balanceOf(address(this));
         require(contractBalance > 0, "No yield to withdraw");
         
@@ -324,18 +316,14 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
      */
     function getProjectStatus() external view returns (
         uint256 currentMonth,
-        uint256 totalMonths,
-        uint256 remainingMonths,
         bool currentMonthFunded,
         bool projectActive,
         bool redemptionAvailable
     ) {
         currentMonth = getCurrentMonth();
-        totalMonths = i_projectLength / MONTH_IN_BLOCKS;
-        remainingMonths = getMonthsUntilProjectEnd();
         currentMonthFunded = currentMonth > 0 ? monthlyDepositsComplete[currentMonth] : true;
-        projectActive = block.number >= i_startDate && block.number < i_startDate + i_projectLength;
-        redemptionAvailable = redeemable || block.number >= i_startDate + i_projectLength;
+        projectActive = block.number >= i_startDate; // Project is always active after start date
+        redemptionAvailable = redeemable; // Only based on owner's decision now
     }
 
     /**
@@ -351,8 +339,8 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
         uint256 monthlyYieldRequired,
         uint256 currentReserves
     ) {
-        yieldRatePerBlock = i_yieldRate;
-        yieldRatePerMonth = i_yieldRate * MONTH_IN_BLOCKS;
+        yieldRatePerBlock = yieldRate;
+        yieldRatePerMonth = yieldRate * MONTH_IN_BLOCKS;
         totalSupplyBasis = i_totalSupply; // Yield calculations based on this
         actualMinted = totalSupply(); // Actually minted tokens
         monthlyYieldRequired = calculateRequiredMonthlyYield();
@@ -363,15 +351,14 @@ contract Land is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard, Pausable {
      * @dev Calculate how much yield a single token generates per month
      */
     function getYieldPerTokenPerMonth() external view returns (uint256) {
-        return i_yieldRate * MONTH_IN_BLOCKS;
+        return yieldRate * MONTH_IN_BLOCKS;
     }
 
     /**
-     * @dev Calculate total project yield liability if all tokens were minted and held
+     * @dev Calculate monthly yield liability if all tokens were minted
      */
-    function getTotalProjectYieldLiability() external view returns (uint256) {
-        uint256 totalMonths = i_projectLength / MONTH_IN_BLOCKS;
-        return i_yieldRate * MONTH_IN_BLOCKS * i_totalSupply * totalMonths;
+    function getMonthlyYieldLiability() external view returns (uint256) {
+        return yieldRate * MONTH_IN_BLOCKS * i_totalSupply;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

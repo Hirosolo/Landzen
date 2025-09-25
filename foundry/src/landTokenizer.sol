@@ -17,7 +17,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     error InvalidPropertyValue();
     error InvalidSupply();
     error InvalidStartDate();
-    error InvalidProjectLength();
     error InvalidPropertyName();
     error InvalidPropertySymbol();
 
@@ -39,7 +38,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 totalSupply;      // Maximum tokens available
         uint256 yieldRate;        // Yield per block per token
         uint256 startDate;        // When minting ends and yield begins
-        uint256 projectLength;    // Investment period
         uint256 landType;         // Property type identifier
         address deployer;         // Who deployed this property
         uint256 deployedAt;       // Block number when deployed
@@ -131,7 +129,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 totalSupply;
         uint256 yieldRate;
         uint256 startDate;
-        uint256 projectLength;
         uint256 landType;
     }
 
@@ -143,7 +140,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 _totalSupply,
         uint256 _yieldRate,
         uint256 _startDate,
-        uint256 _projectLength,
         uint256 _landType
     ) external onlyOwner supportedStablecoin(_paymentToken) whenNotPaused returns (address) {
         PropertyParams memory params = PropertyParams({
@@ -154,7 +150,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
             totalSupply: _totalSupply,
             yieldRate: _yieldRate,
             startDate: _startDate,
-            projectLength: _projectLength,
             landType: _landType
         });
 
@@ -167,7 +162,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
             params.totalSupply,
             params.yieldRate,
             params.startDate,
-            params.projectLength,
             params.landType,
             params.propertyName,
             params.propertySymbol
@@ -183,7 +177,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         if (params.totalValue == 0) revert InvalidPropertyValue();
         if (params.totalSupply == 0) revert InvalidSupply();
         if (params.startDate < block.timestamp) revert InvalidStartDate();
-        if (params.projectLength == 0) revert InvalidProjectLength();
         
         if (bytes(params.propertyName).length == 0) revert InvalidPropertyName();
         if (bytes(params.propertySymbol).length == 0) revert InvalidPropertySymbol();
@@ -206,7 +199,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
             totalSupply: params.totalSupply,
             yieldRate: params.yieldRate,
             startDate: params.startDate,
-            projectLength: params.projectLength,
             landType: params.landType,
             deployer: msg.sender,
             deployedAt: block.number,
