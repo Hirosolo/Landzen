@@ -41,9 +41,6 @@ export default function DashBoardPropertyCard({
       ? toBigInt(property.totalShares)
       : BigInt(0);
 
-  const availabilityPercentage =
-    totalShares > 0 ? Number((availableShares * BigInt(100)) / totalShares) : 0;
-
   const mockAnnualReturn = 10.36;
 
   const totalValueStr =
@@ -53,10 +50,6 @@ export default function DashBoardPropertyCard({
   const apyStr =
     property.apy !== undefined && property.apy !== null
       ? property.apy.toFixed(2) + "%"
-      : "NaN";
-  const availableSharesStr =
-    property.availableShares !== undefined && property.totalShares !== undefined
-      ? `${Number(availableShares)}/${Number(totalShares)} shares`
       : "NaN";
 
   const computedExpired = !property.isActive;
@@ -120,15 +113,15 @@ export default function DashBoardPropertyCard({
       </div>
 
       {/* Card Body */}
-      <div className="p-4 space-y-4 pb-20">
+      <div className="p-4 space-y-4">
         <div className="flex justify-between items-start gap-2">
-  <h3 className="font-bold text-gray-900 text-base break-words flex-1">
-    {propertyName}
-  </h3>
-  <span className="shrink-0 text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
-    {property.propertyTypeName}
-  </span>
-</div>
+          <h3 className="font-bold text-gray-900 text-base break-words flex-1">
+            {propertyName}
+          </h3>
+          <span className="shrink-0 text-xs bg-moss-100 text-gray-700 font-semibold px-3 py-1 rounded-full">
+            {property.propertyTypeName}
+          </span>
+        </div>
 
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
@@ -145,17 +138,32 @@ export default function DashBoardPropertyCard({
           </div>
         </div>
 
-        {/* Listed buy-now text below content */}
+        {/* Listed buy-now text + hover button overlay */}
         {!isExpired && listed && (
-          <div className="pt-6 px-1 flex w-full justify-between">
+          <div className="pt-6 px-1 flex w-full justify-between relative">
             <p className="text-xl font-semibold text-moss-700">Buy Now </p>
             <p className="text-xl font-semibold text-moss-700 self-end">
               {formatUSDTSafe(effectiveBuyPrice)}
             </p>
+
+            {/* Hover overlay button */}
+            <div className="absolute inset-0 overflow-hidden rounded-2xl">
+              <div className="absolute inset-0 z-10 bg-green-700 text-white flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onBuy?.(property.id);
+                  }}
+                  className="w-full h-full font-semibold"
+                >
+                  Buy now {formatUSDTSafe(effectiveBuyPrice)}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Expired action */}
+        {/* Expired Redeem button */}
         {isExpired && (
           <div className="pt-2 flex justify-center">
             <button
@@ -170,22 +178,11 @@ export default function DashBoardPropertyCard({
           </div>
         )}
 
-        {/* Footer */}
-        <div className="absolute left-0 right-0 bottom-0 h-14 overflow-hidden">
-          {/* Hover reveal bar */}
-          {!isExpired && (
-            <div className="absolute inset-0 z-10 bg-green-700 text-white flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-              {listed ? (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onBuy?.(property.id);
-                  }}
-                  className="w-full h-full font-semibold"
-                >
-                  Buy now {formatUSDTSafe(effectiveBuyPrice)}
-                </button>
-              ) : (
+        {/* List for sale (if not listed and not expired) */}
+        {!isExpired && !listed && (
+          <div className="pt-2 flex justify-center relative h-14">
+            <div className="absolute inset-0 overflow-hidden rounded-2xl">
+              <div className="absolute inset-0 z-10 bg-green-700 text-white flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -195,10 +192,10 @@ export default function DashBoardPropertyCard({
                 >
                   List for sale
                 </button>
-              )}
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
