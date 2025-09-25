@@ -61,16 +61,46 @@ export function useUserPortfolioStats() {
               const investmentValue = sharePrice * nftBalance;
               totalInvestment += investmentValue;
 
-              // Calculate available yield: APY × investment value (simplified monthly calculation)
-              const monthlyYield = (property.apy / 100 / 12) * investmentValue; // Monthly yield
-              availableToClaim += monthlyYield;
+              // Get yield rate and lastWithdraw for dynamic yield calculation
+              const [yieldRateResult, lastWithdrawResult, currentBlockResult] =
+                await Promise.all([
+                  client.readContract({
+                    address: propertyAddress as `0x${string}`,
+                    abi: LandABI,
+                    functionName: "yieldRate",
+                    args: [],
+                  }),
+                  client.readContract({
+                    address: propertyAddress as `0x${string}`,
+                    abi: LandABI,
+                    functionName: "lastWithdraw",
+                    args: [userAddress as `0x${string}`],
+                  }),
+                  client.getBlockNumber(),
+                ]);
+
+              const yieldRate = Number(yieldRateResult);
+              const lastWithdrawBlock = Number(lastWithdrawResult);
+              const currentBlock = Number(currentBlockResult);
+
+              // Calculate blocks passed since last withdrawal
+              const blocksPassed = currentBlock - lastWithdrawBlock;
+
+              // Calculate accumulated yield: yieldRate * blocksPassed * userBalance
+              const accumulatedYield =
+                (yieldRate * blocksPassed * nftBalance) / 1e18; // Convert from wei to USDT
+              availableToClaim += accumulatedYield;
 
               console.log(`Property ${propertyAddress}:`, {
                 name: property.propertyName,
                 balance: nftBalance,
                 sharePrice: sharePrice.toFixed(2),
                 investmentValue: investmentValue.toFixed(2),
-                monthlyYield: monthlyYield.toFixed(4),
+                yieldRate: yieldRate.toString(),
+                lastWithdrawBlock,
+                currentBlock,
+                blocksPassed,
+                accumulatedYield: accumulatedYield.toFixed(6),
                 apy: property.apy,
               });
             }
@@ -87,7 +117,7 @@ export function useUserPortfolioStats() {
 
       console.log("Portfolio Stats Summary:", {
         totalInvestment: totalInvestment.toFixed(2),
-        availableToClaim: availableToClaim.toFixed(2),
+        availableToClaim: availableToClaim.toFixed(6),
         totalBalance: totalBalance.toFixed(2),
         monthlyEarnings: 7.165,
       });
@@ -100,7 +130,7 @@ export function useUserPortfolioStats() {
       };
     },
     enabled: !!userAddress && !!allProperties,
-    staleTime: 30000,
-    refetchInterval: 60000,
+    staleTime: 5000, // Refresh every 5 seconds for dynamic yield
+    refetchInterval: 5000, // Auto-refresh every 5 seconds to show growing yield
   });
 }
