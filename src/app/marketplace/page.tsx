@@ -112,7 +112,7 @@ export default function Marketplace() {
         <SearchBar onFilterToggle={toggleFilter} isFilterOpen={isFilterOpen} />
 
         {/* Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 px-4">
           {filteredProperties.map((p) => {
             const mapped = toPropertyData(p);
             const listed = p.listed === "true";

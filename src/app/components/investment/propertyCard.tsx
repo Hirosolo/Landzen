@@ -4,6 +4,7 @@ import { formatUSDTSafe, toBigInt } from "@/lib/utils";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+
 type PropertyCardProps = {
   property: PropertyData;
   onBuy?: (property: PropertyData) => void;

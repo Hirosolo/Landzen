@@ -8,8 +8,7 @@ import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoConte
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import SearchBar from "../components/investment/searchBar";
 import FilterSidebar from "../components/investment/filterSidebar";
-import { PropertyData, useGetAllProperties } from "@/lib/hooks";
-import { CONTRACT_ADDRESSES } from "@/lib/contracts";
+import { PropertyData } from "@/lib/hooks";
 
 export default function Marketplace() {
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(
@@ -19,7 +18,6 @@ export default function Marketplace() {
   const [isClosing, setIsClosing] = useState(false);
   const closeModal = () => {
     setIsClosing(true);
-    // Unmount after fade completes
     setTimeout(() => {
       setSelectedProperty(null);
       setIsClosing(false);
@@ -35,20 +33,30 @@ export default function Marketplace() {
 
   return (
     <LayoutGroup>
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <MarketplaceHeader />
+
         {/*welcome message */}
         <section className="bg-[url('/image-marketplaceBackground.png')] bg-cover bg-center text-white py-30">
-          <div className="max-w-4xl mx-auto text-center px-4 rounded-2xl p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto text-center px-4 rounded-2xl p-6"
+          >
             <h1 className="text-2xl md:text-3xl font-bold">
               Blockchain Real Estate Investment
             </h1>
-
             <p className="mt-4 text-sm md:text-base font-medium">
               Invest in tokenized real estate properties directly from the
               blockchain. All data fetched live from Base Sepolia network.
             </p>
-          </div>
+          </motion.div>
         </section>
 
         {/*navigation bar*/}
@@ -119,12 +127,10 @@ export default function Marketplace() {
             >
               <motion.div
                 className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto relative"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  opacity: { duration: 0.25 },
-                }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.25 }}
               >
                 <button
                   onClick={closeModal}
@@ -141,7 +147,7 @@ export default function Marketplace() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </LayoutGroup>
   );
 }
