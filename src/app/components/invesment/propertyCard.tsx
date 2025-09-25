@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 type PropertyCardProps = {
   property: PropertyData;
-  onBuy?: (id: number | string) => void;
+  onBuy?: (property: PropertyData) => void;
 };
 
 export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
@@ -24,7 +24,7 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
   return (
     <motion.div
       className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-white cursor-pointer transition-transform duration-200 hover:shadow-xl hover:scale-[1.01]"
-      onClick={() => onBuy?.(property.id)}
+      onClick={() => onBuy?.(property)}
       role="button"
       tabIndex={0}
       layoutId={`property-${property.id}`}
@@ -107,7 +107,7 @@ export default function PropertyCard({ property, onBuy }: PropertyCardProps) {
 
         {/* Invest button */}
         <button
-          onClick={(e) => { e.stopPropagation(); onBuy?.(property.id); }}
+          onClick={(e) => { e.stopPropagation(); onBuy?.(property); }}
           className="w-full bg-green-800 hover:bg-green-800 text-white text-sm font-semibold px-4 py-3 rounded-md shadow hover:cursor-pointer"
         >
           INVEST NOW
