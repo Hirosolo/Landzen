@@ -165,39 +165,53 @@ export default function MyPositionSection() {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {filteredProperties.map((p) => {
-            const mapped: PropertyData = toPropertyData(p);
-            const listed = p.listed === "true";
-            const statusOverride =
-              p.status === "Expired" ? "Expired" : ("Active" as const);
-            return (
-              <motion.div
-                key={p.id}
-                layoutId={`dashboard-property-${p.id}`}
-                onClick={() => setSelectedId(p.id)}
-              >
-                <DashBoardPropertyCard
-                  property={mapped}
-                  propertyName={p.name}
-                  isListed={listed}
-                  buyPrice={mapped.sharePrice}
-                  statusOverride={statusOverride}
-                  selected={!!selectedForListing[p.id]}
-                  onToggleSelect={(id) => {
-                    setSelectedForListing((prev) => ({
-                      ...prev,
-                      [Number(id)]: !prev[Number(id)],
-                    }));
-                  }}
-                  onListForSale={() => console.log("list for sale", p.id)}
-                  onBuy={() => console.log("buy", p.id)}
-                  onRedeem={() => console.log("redeem", p.id)}
-                />
-              </motion.div>
-            );
-          })}
-        </div>
+<motion.div 
+  className="grid gap-6 md:grid-cols-3 lg:grid-cols-4"
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } }
+  }}
+>
+  {filteredProperties.map((p) => {
+    const mapped: PropertyData = toPropertyData(p);
+    const listed = p.listed === "true";
+    const statusOverride =
+      p.status === "Expired" ? "Expired" : ("Active" as const);
+    return (
+      <motion.div
+        key={p.id}
+        layoutId={`dashboard-property-${p.id}`}
+        onClick={() => setSelectedId(p.id)}
+        variants={{
+          hidden: { opacity: 0, y: 30 },
+          visible: { opacity: 1, y: 0 }
+        }}
+        transition={{ duration: 0.4 }}
+      >
+        <DashBoardPropertyCard
+          property={mapped}
+          propertyName={p.name}
+          isListed={listed}
+          buyPrice={mapped.sharePrice}
+          statusOverride={statusOverride}
+          selected={!!selectedForListing[p.id]}
+          onToggleSelect={(id) => {
+            setSelectedForListing((prev) => ({
+              ...prev,
+              [Number(id)]: !prev[Number(id)],
+            }));
+          }}
+          onListForSale={() => console.log("list for sale", p.id)}
+          onBuy={() => console.log("buy", p.id)}
+          onRedeem={() => console.log("redeem", p.id)}
+        />
+      </motion.div>
+    );
+  })}
+</motion.div>
+
       </section>
 
       {/* Property Info Modal */}
