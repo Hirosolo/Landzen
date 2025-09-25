@@ -143,19 +143,6 @@ export default function DashBoardPropertyCard({
           </div>
         </div>
 
-        <div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-green-500 h-2 rounded-full"
-              style={{ width: `${availabilityPercentage}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between items-center mt-1 text-xs">
-            <span className="text-green font-medium">Available</span>
-            <span className="text-gray-600">{availableSharesStr}</span>
-          </div>
-        </div>
-
         {/* Listed buy-now text below content */}
         {!isExpired && listed && (
           <div className="pt-6 px-1 flex w-full justify-between">

@@ -23,7 +23,7 @@ const properties = [
     endDate: "01/01/2025",
     type: "Residential Home",
     image: "/image-property.png",
-    listed: "false",
+    listed: "true",
     floor: 0.0222,
     traitFloor: 0.0248,
   },
@@ -75,7 +75,9 @@ export default function MyPositionSection() {
   const [sort, setSort] = useState("name-asc");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [showListingDrawer, setShowListingDrawer] = useState(false);
-  const [selectedForListing, setSelectedForListing] = useState<Record<number, boolean>>({});
+  const [selectedForListing, setSelectedForListing] = useState<
+    Record<number, boolean>
+  >({});
 
   // Filter + Sort
   const filteredProperties = properties
@@ -149,10 +151,13 @@ export default function MyPositionSection() {
                   isListed={listed}
                   buyPrice={mapped.sharePrice}
                   statusOverride={statusOverride}
-                selected={!!selectedForListing[p.id]}
-                onToggleSelect={(id) => {
-                  setSelectedForListing(prev => ({ ...prev, [Number(id)]: !prev[Number(id)] }));
-                }}
+                  selected={!!selectedForListing[p.id]}
+                  onToggleSelect={(id) => {
+                    setSelectedForListing((prev) => ({
+                      ...prev,
+                      [Number(id)]: !prev[Number(id)],
+                    }));
+                  }}
                   onListForSale={() => console.log("list for sale", p.id)}
                   onBuy={() => console.log("buy", p.id)}
                   onRedeem={() => console.log("redeem", p.id)}
@@ -204,18 +209,49 @@ export default function MyPositionSection() {
 
       {/* Sticky Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-md px-6 py-3 flex items-center gap-3 z-40">
+        {/* List Items button */}
         <button
           onClick={() => setShowListingDrawer(true)}
-          className="bg-blue-400 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-500"
+          disabled={
+            Object.values(selectedForListing).filter(Boolean).length === 0
+          }
+          className={`px-4 py-2 rounded-md font-semibold ${
+            Object.values(selectedForListing).filter(Boolean).length === 0
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-blue-400 text-white hover:bg-blue-500"
+          }`}
         >
-          {Object.values(selectedForListing).filter(Boolean).length} List items
+          {Object.values(selectedForListing).filter(Boolean).length > 0
+            ? `${
+                Object.values(selectedForListing).filter(Boolean).length
+              } List Item${
+                Object.values(selectedForListing).filter(Boolean).length > 1
+                  ? "s"
+                  : ""
+              }`
+            : "List Items"}
         </button>
+
+        {/* Cancel Listings button */}
         <button
-          disabled
-          className="bg-gray-100 text-gray-400 px-4 py-2 rounded-md font-semibold cursor-not-allowed"
+          onClick={() => setSelectedForListing({})} // 🔹 Clear all selections
+          disabled={
+            !filteredProperties.some(
+              (p) => selectedForListing[p.id] && p.listed === "true"
+            )
+          }
+          className={`px-4 py-2 rounded-md font-semibold ${
+            !filteredProperties.some(
+              (p) => selectedForListing[p.id] && p.listed === "true"
+            )
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-red-500 text-white hover:bg-red-600"
+          }`}
         >
           Cancel listings
         </button>
+
+        {/* Accept Offers button (still disabled for now) */}
         <button
           disabled
           className="bg-gray-100 text-gray-400 px-4 py-2 rounded-md font-semibold cursor-not-allowed"
@@ -271,40 +307,54 @@ export default function MyPositionSection() {
                   </div>
 
                   {/* Table rows - only selected */}
-                  {filteredProperties.filter(p => selectedForListing[p.id]).map((p) => (
-                    <div
-                      key={p.id}
-                      className="grid grid-cols-6 gap-4 items-center text-base text-moss-700 border-b py-3"
-                    >
-                      {/* Item */}
-                      <div className="col-span-2 flex items-center gap-3">
-                        <Image
-                          src={p.image}
-                          alt={p.name}
-                          width={40}
-                          height={40}
-                          className="rounded-md"
-                        />
-                        <span className="font-semibold">{p.name}</span>
-                      </div>
-                      <div className="font-semibold">${p.value.toLocaleString()}</div>
-                      <div>-</div>
-                      <div>-</div>
-                      <div className="flex items-center justify-end">
-                        <div className="flex items-center border rounded-md overflow-hidden">
-                          <input type="number" defaultValue={1} className="w-16 px-2 py-1 outline-none" />
-                          <span className="px-3 py-1 bg-gray-100">USDT</span>
+                  {filteredProperties
+                    .filter((p) => selectedForListing[p.id])
+                    .map((p) => (
+                      <div
+                        key={p.id}
+                        className="grid grid-cols-6 gap-4 items-center text-base text-moss-700 border-b py-3"
+                      >
+                        {/* Item */}
+                        <div className="col-span-2 flex items-center gap-3">
+                          <Image
+                            src={p.image}
+                            alt={p.name}
+                            width={40}
+                            height={40}
+                            className="rounded-md"
+                          />
+                          <span className="font-semibold">{p.name}</span>
+                        </div>
+                        <div className="font-semibold">
+                          ${p.value.toLocaleString()}
+                        </div>
+                        <div>-</div>
+                        <div>-</div>
+                        <div className="flex items-center justify-end">
+                          <div className="flex items-center border rounded-md overflow-hidden">
+                            <input
+                              type="number"
+                              defaultValue={1}
+                              className="w-16 px-2 py-1 outline-none"
+                            />
+                            <span className="px-3 py-1 bg-gray-100">USDT</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
 
               {/* Totals */}
               <div className="px-6 py-6 space-y-4 text-lg text-moss-700 border-t bg-beige-100">
-                <div className="flex justify-between"><span>Platform fee</span><span className="font-semibold">$100</span></div>
-                <div className="flex justify-between"><span>Total est. proceeds</span><span className="font-semibold">$100</span></div>
+                <div className="flex justify-between">
+                  <span>Platform fee</span>
+                  <span className="font-semibold">$100</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total est. proceeds</span>
+                  <span className="font-semibold">$100</span>
+                </div>
               </div>
 
               {/* Footer */}
