@@ -49,7 +49,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-beige-100 text-gray-900">
+    <main className="w-full overflow-x-hidden bg-beige-100 text-gray-900">
       <MarketplaceSearchBar />
       {/* Hero Section */}
       <section className="px-6 sm:px-12 py-16 flex flex-col lg:flex-row items-center justify-between gap-12 bg-darkGreen">
