@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import MarketplaceHeader from "@/app/components/invesment/header";
-import SearchBar from "../components/invesment/searchBar";
-import FilterSidebar from "../components/invesment/filterSidebar";
+import MarketplaceHeader from "@/app/components/investment/header";
+import SearchBar from "../components/investment/searchBar";
+import FilterSidebar from "../components/investment/filterSidebar";
 import DashBoardPropertyCard from "../components/dashBoard/dashBoardPropertyCard";
 import { PropertyData } from "@/lib/hooks";
 

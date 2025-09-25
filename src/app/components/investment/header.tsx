@@ -6,20 +6,21 @@ export default function MarketplaceSearchBar() {
   const pathname = usePathname();
   
   const isDashboard = pathname === "/dashboard";
-  const isInvesment = pathname === "/invesment";
+  const isInvestment = pathname === "/investment";
   const isFaucet = pathname === "/faucet";
   const isMarketplace = pathname === "/marketplace";
 
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-beige border-none">
       {/* Logo */}
-      <div className="flex items-center gap-4">
+      <div className="ml-5 flex items-center gap-4 mr-0 pr-0">
         <img
           src="/logo-landzen.png"
           onClick={() => (window.location.href = "/")}
           alt="Logo"
           className="h-12 w-13 cursor-pointer border-none"
         />
+        <a onClick={() => (window.location.href = "/")} className="pl-0 mr-0 text-green font-bold px-2.5 text-2xl hover:cursor-pointer">Landzen</a>
       </div>
 
       {/* Navigation + Wallet */}
@@ -39,15 +40,15 @@ export default function MarketplaceSearchBar() {
 
         <button
           onClick={() => {
-            window.location.href = "/invesment";
+            window.location.href = "/investment";
           }}
           className={`text-green font-semibold px-2.5 transition-all duration-200 ${
-            isInvesment
+            isInvestment
               ? "border-b-2 border-green pb-1"
               : "hover:border-b-2 hover:border-green hover:pb-1"
           }`}
         >
-          Invesment
+          Investment
         </button>
 
         <button

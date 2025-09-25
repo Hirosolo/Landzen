@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
-import MarketplaceSearchBar from "./components/invesment/header";
+import { motion } from "framer-motion";
+import MarketplaceSearchBar from "./components/investment/header";
 import LandingPageNavBars from "./components/landingPage/page";
 import LandingPagePropertyList from "./components/landingPage/landingPagePropertyList";
 import LandingPageGuide from "./components/landingPage/guide";
@@ -52,36 +53,113 @@ export default function LandingPage() {
     <main className="w-full overflow-x-hidden bg-beige-100 text-gray-900">
       <MarketplaceSearchBar />
       {/* Hero Section */}
-      <section className="px-6 sm:px-12 py-16 flex flex-col lg:flex-row items-center justify-between gap-12 bg-darkGreen">
+      <section className="px-6 sm:px-12 py-16 flex flex-col lg:flex-row items-center justify-between gap-12 bg-darkGreen overflow-hidden">
         {/* Left content */}
-        <div className="flex-1 space-y-6">
-          <h1 className="text-5xl font-extrabold leading-tight text-beige-100">
-            FROM <br /> SMALL FUNDS <br /> TO <br /> BIG PROPERTIES
-          </h1>
-          <p className="max-w-lg text-beige-100">
+        <motion.div
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeIn" }}
+          className="flex-1 space-y-6"
+        >
+          <motion.h1 
+            className="text-5xl font-extrabold leading-tight text-beige-100"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+              className="block"
+            >
+              FROM
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.8 }}
+              className="block"
+            >
+              SMALL FUNDS
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 1.0 }}
+              className="block"
+            >
+              TO
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 1.2 }}
+              className="block"
+            >
+              BIG PROPERTIES
+            </motion.span>
+          </motion.h1>
+          <motion.p
+            className="max-w-lg text-beige-100"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.4 }}
+          >
             We make it possible for anyone to invest in premium real estate with
             small amounts of capital. Through tokenization, you can own a
             fraction of global properties, earn rental yields, and benefit from
             appreciation—all starting with just a few dollars.
-          </p>
-          <button
+          </motion.p>
+          <motion.button
             onClick={() => {
               window.location.href = "/marketPlace";
             }}
-            className="px-6 py-3 bg-beige-100 rounded-lg font-medium shadow hover:bg-beige-300 text-black font-semibold"
+            className="px-6 py-3 bg-beige-100 rounded-lg font-medium shadow hover:bg-beige-300 text-black font-semibold hover:scale-105 transition-transform"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             View projects →
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* Right illustration */}
-        <div className="flex-1 flex justify-center">
-          <img
+        <motion.div 
+          className="flex-1 flex justify-center"
+        >
+          <motion.img
             src="/image-heroSection.png"
             alt="Hero illustration"
             className="max-h-[400px]"
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ 
+              duration: 1,
+              scale: {
+                type: "spring",
+                damping: 30,
+                stiffness: 85,
+                mass: 0.5
+              },
+              opacity: {
+                duration: 1.2,
+                ease: [0.4, 0, 0.2, 1]
+              }
+            }}
+            whileHover={{ 
+              scale: 1.02,
+              transition: { 
+                type: "spring",
+                stiffness: 300,
+                damping: 15
+              }
+            }}
+            whileTap={{ scale: 0.98 }}
           />
-        </div>
+        </motion.div>
       </section>
 
       {/* Navigation Tabs */}
@@ -91,7 +169,7 @@ export default function LandingPage() {
       <section id="projects" className="px-6 sm:px-12 py-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Featured projects</h2>
-          <a href="#" className="text-blue-600 text-sm font-medium">
+          <a href="/invesment" className="text-xs md:text-xl font-semibold hover:border-b-2 hover:border-green hover:pb-1 transition-all duration-200">
             View more
           </a>
         </div>
@@ -140,14 +218,14 @@ export default function LandingPage() {
 
       {/* Sponsor */}
       <section id="sponsor" className="px-6 sm:px-12 py-12 text-center">
-        <h2 className="text-3xl font-semibold mb-10 text-green font-bold">
+        <h2 className="text-2xl font-semibold mb-10 text-green font-bold">
           Sponsored By
         </h2>
         <LogoLoop
           logos={imageLogos}
           speed={120}
           direction="left"
-          logoHeight={240}
+          logoHeight={75}
           gap={60}
           pauseOnHover={false}
           scaleOnHover={false}
@@ -155,6 +233,86 @@ export default function LandingPage() {
           ariaLabel="Technology partners"
         />
       </section>
+
+      {/* Footer */}
+      <footer className="bg-darkGreen text-beige-100 py-16">
+        <div className="container mx-auto px-6 sm:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            {/* Company Info */}
+            <div className="space-y-4">
+              <img src="/logo-landzen.svg" alt="Landzen" className="h-8" />
+              <p className="text-sm opacity-80 mt-4">
+                Making real estate investment accessible to everyone through blockchain technology.
+              </p>
+            </div>
+
+            {/* Contact Info */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Contact Us</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-center gap-2">
+                  <span>📍</span>
+                  <span>University of Information and Technology, Thu Duc, HCMC, Vietnam</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span>📧</span>
+                  <a href="mailto:contact@landzen.com" className="hover:text-green">
+                    contact@landzen.com
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span>📱</span>
+                  <a href="tel:+8400000000" className="hover:text-green">
+                    +84 00000000
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Quick Links */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Quick Links</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#projects" className="hover:text-green">Featured Projects</a>
+                </li>
+                <li>
+                  <a href="#about-us" className="hover:text-green">About Us</a>
+                </li>
+                <li>
+                  <a href="#guide" className="hover:text-green">Guide</a>
+                </li>
+                <li>
+                  <a href="#faq" className="hover:text-green">FAQ</a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Newsletter */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Stay Updated</h3>
+              <p className="text-sm opacity-80">
+                Subscribe to our newsletter for the latest updates and opportunities.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-4 py-2 rounded-lg bg-beige-100/10 border border-beige-100/20 text-sm focus:outline-none focus:border-green"
+                />
+                <button className="px-4 py-2 bg-green rounded-lg text-sm font-semibold hover:bg-opacity-90 transition-colors">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="mt-12 pt-8 border-t border-beige-100/20 text-sm text-center opacity-80">
+            <p>© 2025 Landzen. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

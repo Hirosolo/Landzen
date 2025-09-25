@@ -1,13 +1,13 @@
 "use client";
-import MarketplaceHeader from "@/app/components/invesment/header";
-import NavBar from "@/app/components/invesment/navBar";
-import PropertyList from "@/app/components/invesment/propertyList";
-import Paging from "@/app/components/invesment/paging";
+import MarketplaceHeader from "@/app/components/investment/header";
+import NavBar from "@/app/components/investment/navBar";
+import PropertyList from "@/app/components/investment/propertyList";
+import Paging from "@/app/components/investment/paging";
 import { useState } from "react";
 import PropertyInfoContent from "@/app/components/propertyInfo/PropertyInfoContent";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import SearchBar from "../components/invesment/searchBar";
-import FilterSidebar from "../components/invesment/filterSidebar";
+import SearchBar from "../components/investment/searchBar";
+import FilterSidebar from "../components/investment/filterSidebar";
 import { PropertyData, useGetAllProperties } from "@/lib/hooks";
 import { CONTRACT_ADDRESSES } from "@/lib/contracts";
 
