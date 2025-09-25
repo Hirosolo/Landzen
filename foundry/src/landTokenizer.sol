@@ -31,7 +31,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         uint256 landType;
     }
     
-    mapping(address => bool) public validators;
     mapping(uint256 => LandInfo) public lands;
     mapping(address => bool) public landzenLands; // this map will tell which land get tokenized by LandZen
     mapping(address => bool) public blacklist; // blacklist of investors
@@ -39,10 +38,6 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////// MODIFIERS ////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
-    modifier onlyValidator() {
-        require(validators[msg.sender], "Not a validator");
-        _;
-    }
 
     modifier onlyLandZenLand(address landAddress) {
         require(landzenLands[landAddress], "Not a LandZen land");
@@ -68,11 +63,10 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
     event EmergencyUnpauseAll();
 
     constructor() Ownable(msg.sender) {
-        validators[msg.sender] = true;
     }
 
     // TODO: Finished land.sol then implement this function
-    function tokenizeLand() {
+    function tokenizeLand() public {
         uint256 landId = landCount + 1;
         landCount = landId;
     }
@@ -94,17 +88,7 @@ contract LandTokenizer is Ownable, ReentrancyGuard, Pausable{
         blacklist[addr] = false;
         emit blacklistUpdated(addr, false);
     }
-
-    function addValidator(address addr) external onlyOwner validAddress(addr) {
-        validators[addr] = true;
-        emit validatorUpdated(addr, true);
-    }
-
-    function removeValidator(address addr) external onlyOwner validAddress(addr) {
-        validators[addr] = false;
-        emit validatorUpdated(addr, false);
-    }
-
+    
     function emergencyPauseAll() external onlyOwner {
         _pause();
         emit EmergencyPauseAll();
