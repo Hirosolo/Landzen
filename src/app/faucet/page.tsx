@@ -3,6 +3,7 @@ import { useAccount } from "wagmi";
 import { useMintUSDT } from "@/lib/hooks";
 import { formatUSDT, USDT_TOKEN } from "@/lib/contracts";
 import { useState } from "react";
+import MarketplaceSearchBar from "../components/investment/header";
 
 export default function Faucet() {
   const { address, isConnected } = useAccount();
@@ -113,7 +114,10 @@ export default function Faucet() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
+    <div>
+
+      <MarketplaceSearchBar/>
+    <div className="min-h-screen bg-beige-100 from-green-50 to-green-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -233,6 +237,7 @@ export default function Faucet() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
