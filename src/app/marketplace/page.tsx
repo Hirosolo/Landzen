@@ -12,49 +12,65 @@ const properties = [
   {
     id: 1,
     city: "Ho Chi Minh",
-    name: "Vinhomes Grand Park",
-    value: 1000,
-    status: "Expired",
-    type: "Residential Home",
+    name: "Saigon Pearl Residence",
+    totalValue: 150000, // $150k property value
+    totalShares: 1250, // Makes each NFT worth $120
+    availableShares: 500,
+    status: "Active",
+    type: "Residential",
     image: "/image-property.png",
     listed: "false",
+    apy: 5.2,
   },
   {
     id: 2,
     city: "Ho Chi Minh",
-    name: "Empire City",
-    value: 2000,
+    name: "Empire City Tower",
+    totalValue: 180000, // $180k property value
+    totalShares: 1500, // Makes each NFT worth $120
+    availableShares: 300,
     status: "Active",
-    type: "Residential Home",
+    type: "Commercial",
     image: "/image-property.png",
     listed: "true",
+    apy: 6.8,
   },
 ];
 
 // Map mock to PropertyData for card
 function toPropertyData(p: (typeof properties)[number]): PropertyData {
-  const usdt = (amount: number) => BigInt(Math.round(amount * 1_000_000));
+  const usdt = (amount: number) => BigInt(Math.round(amount * 1e18)); // Convert to USDT (18 decimals to match utils)
+  const soldShares = p.totalShares - p.availableShares;
+  const sharePrice = p.totalValue / p.totalShares; // $120 per NFT
+  const soldPercentage = (soldShares / p.totalShares) * 100;
+  const availabilityPercentage = (p.availableShares / p.totalShares) * 100;
+
   return {
     id: p.id,
     contractAddress: "0x0000000000000000000000000000000000000000",
     propertyOwner: "0x0000000000000000000000000000000000000000",
     propertyName: p.name,
-    propertySymbol: "LAND",
-    totalValue: usdt(p.value).toString(),
-    totalShares: BigInt(1).toString(),
-    availableShares: BigInt(1).toString(),
-    remainingShares: BigInt(1).toString(),
-    soldShares: BigInt(0).toString(),
+    propertySymbol: p.name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase(),
+    totalValue: usdt(p.totalValue).toString(),
+    totalShares: BigInt(p.totalShares).toString(),
+    availableShares: BigInt(p.availableShares).toString(),
+    remainingShares: BigInt(p.availableShares).toString(),
+    soldShares: BigInt(soldShares).toString(),
     yieldPerBlock: BigInt(0).toString(),
     yieldReserve: BigInt(0).toString(),
-    propertyType: BigInt(1).toString(),
+    propertyType:
+      p.type === "Residential" ? BigInt(1).toString() : BigInt(2).toString(),
     propertyTypeName: p.type,
     isActive: p.status !== "Expired",
     createdAt: BigInt(Date.now()).toString(),
-    sharePrice: usdt(p.value).toString(),
-    soldPercentage: 0,
-    availabilityPercentage: 100,
-    apy: 0,
+    sharePrice: usdt(sharePrice).toString(),
+    soldPercentage: Math.round(soldPercentage),
+    availabilityPercentage: Math.round(availabilityPercentage),
+    apy: p.apy,
   };
 }
 

@@ -29,16 +29,36 @@ interface IndividualNFTCardProps {
 }
 
 // Helper: convert real data to PropertyData format expected by the card
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toPropertyData(
-  p: Record<string, any>,
+  p: {
+    id?: string | number;
+    contractAddress?: string;
+    propertyOwner?: string;
+    name?: string;
+    propertyName?: string;
+    propertySymbol?: string;
+    apy?: number;
+    value?: number;
+    totalAmount?: number;
+    totalSupply?: number;
+    remainingToMint?: number;
+    yieldPerBlock?: string;
+    yieldReserve?: string;
+    propertyType?: string;
+    type?: string;
+    propertyTypeName?: string;
+    status?: string;
+    createdAt?: string;
+    floor?: number;
+    pricePerShare?: number;
+  },
   tokenIndex: number
 ): PropertyData {
   // Convert to USDT wei format (18 decimals) for consistency with other components
   const toUSDTWei = (amount: number) => BigInt(Math.round(amount * 1e18));
 
   return {
-    id: (typeof p.id === "string" ? parseInt(p.id) : p.id) + tokenIndex, // Unique ID for each NFT
+    id: (typeof p.id === "string" ? parseInt(p.id) : p.id || 0) + tokenIndex, // Unique ID for each NFT
     contractAddress: p.contractAddress || "", // Use real contract address
     propertyOwner: p.propertyOwner || "",
     propertyName: p.name || p.propertyName || "",
