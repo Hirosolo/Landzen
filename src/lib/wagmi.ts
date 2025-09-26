@@ -1,6 +1,7 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { mainnet, sepolia, polygon, arbitrum } from 'wagmi/chains';
-// Base Sepolia testnet config
+import { http } from 'viem'
+
+// Base Sepolia testnet config with fallback RPCs
 export const baseSepolia = {
   id: 84532,
   name: 'Base Sepolia',
@@ -11,8 +12,21 @@ export const baseSepolia = {
     decimals: 18,
   },
   rpcUrls: {
-    default: { http: ['https://sepolia.base.org'] },
-    public: { http: ['https://sepolia.base.org'] },
+    // Use Alchemy as primary RPC and public endpoint as fallback
+    default: {
+      http: [
+        `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+        'https://sepolia.base.org',
+        'https://1rpc.io/base-sepolia'
+      ]
+    },
+    public: {
+      http: [
+        `https://base-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`,
+        'https://sepolia.base.org',
+        'https://1rpc.io/base-sepolia'
+      ]
+    }
   },
   blockExplorers: {
     default: { name: 'Basescan', url: 'https://sepolia.basescan.org' },
@@ -22,9 +36,12 @@ export const baseSepolia = {
 
 export const config = getDefaultConfig({
   appName: "Landzen",
-  projectId: "5c992b50e8871ed27bdb8e9f96975888",
-  chains: [mainnet, sepolia, polygon, arbitrum, baseSepolia],
+  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "5c992b50e8871ed27bdb8e9f96975888",
+  chains: [baseSepolia], // Only include Base Sepolia
   ssr: true,
+  transports: {
+    [baseSepolia.id]: http()
+  }
 });
 
 declare module 'wagmi' {
