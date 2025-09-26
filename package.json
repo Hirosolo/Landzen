@@ -17,7 +17,7 @@
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-popover": "^1.1.15",
     "@rainbow-me/rainbowkit": "^2.2.8",
-    "@react-three/drei": "^10.7.6",
+    "@react-three/drei": "^9.56.6",
     "@tanstack/react-query": "^5.89.0",
     "@wagmi/core": "^2.21.0",
     "framer-motion": "^12.23.16",

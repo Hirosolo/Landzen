@@ -5,20 +5,6 @@ import { useRealPropertyData } from "./useRealPropertyData";
 import DashBoardPropertyCard from "./dashBoardPropertyCard";
 import type { PropertyData } from "@/lib/hooks";
 
-interface RealPropertyItem {
-  id: string;
-  propertyName: string;
-  apy: number;
-  totalAmount: number;
-  contractAddress: string;
-  propertyTypeName: string;
-  fundingGoal: number;
-  totalRaised: number;
-  propertyDescription: string;
-  propertyLocation: string;
-  pricePerShare: number;
-}
-
 interface IndividualNFTCardProps {
   propertyAddress: string;
   userAddress: string;
@@ -26,6 +12,30 @@ interface IndividualNFTCardProps {
   selectedForListing: Record<string, boolean>;
   onToggleSelect: (id: string) => void;
   onSelect: (id: string) => void;
+}
+
+interface RawPropertyData {
+  id: string | number;
+  contractAddress?: string;
+  propertyOwner?: string;
+  name?: string;
+  propertyName?: string;
+  propertySymbol?: string;
+  apy?: number;
+  value?: number;
+  totalAmount?: number;
+  totalSupply?: number;
+  remainingToMint?: number;
+  yieldPerBlock?: string;
+  yieldReserve?: string;
+  propertyType?: string;
+  type?: string;
+  propertyTypeName?: string;
+  status?: string;
+  createdAt?: string;
+  floor?: number;
+  pricePerShare?: number;
+  listed?: string;
 }
 
 // Helper: convert real data to PropertyData format expected by the card
@@ -132,7 +142,7 @@ export default function IndividualNFTCard({
         buyPrice={BigInt(mapped.sharePrice)}
         statusOverride={statusOverride}
         selected={!!selectedForListing[uniqueId]}
-        onToggleSelect={(id) => {
+        onToggleSelect={() => {
           onToggleSelect(uniqueId);
         }}
       />

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchPropertyData } from '@/lib/hooks'
+import { fetchPropertyData } from '@/lib/server-utils'
 
 export async function GET(
   request: NextRequest,
