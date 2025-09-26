@@ -1,18 +1,13 @@
-import { createPublicClient, http } from 'viem'
-import { baseSepolia } from './wagmi'
+import { publicClient } from './server-config'
 import { CONTRACT_ADDRESSES, PROPERTY_TYPES } from './contracts'
 import { LandTokenizerABI, LandABI } from './abis'
 import type { PropertyData } from './hooks'
 
 export async function fetchPropertyData(propertyId: number): Promise<PropertyData | null> {
   try {
-    const client = createPublicClient({
-      chain: baseSepolia,
-      transport: http('https://sepolia.base.org')
-    })
     
     // Get basic property info from tokenizer
-    const basicInfo = await client.readContract({
+    const basicInfo = await publicClient.readContract({
       address: CONTRACT_ADDRESSES.LAND_TOKENIZER as `0x${string}`,
       abi: LandTokenizerABI,
       functionName: 'getPropertyBasics',
@@ -26,13 +21,13 @@ export async function fetchPropertyData(propertyId: number): Promise<PropertyDat
     }
     
     // Get land type and yield rate from the Land contract
-    const landType = await client.readContract({
+    const landType = await publicClient.readContract({
       address: landContract as `0x${string}`,
       abi: LandABI,
       functionName: 'i_landType',
     }) as bigint
     
-    const yieldRate = await client.readContract({
+    const yieldRate = await publicClient.readContract({
       address: landContract as `0x${string}`,
       abi: LandABI,
       functionName: 'yieldRate',
